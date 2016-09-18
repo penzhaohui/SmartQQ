@@ -1,0 +1,14 @@
+F:\RuiRuiQQ\MyQQ\bin\Debug\MyQQ.exe.config
+F:\RuiRuiQQ\MyQQ\bin\Debug\MyQQ.exe
+F:\RuiRuiQQ\MyQQ\bin\Debug\MyQQ.pdb
+F:\RuiRuiQQ\MyQQ\bin\Debug\Microsoft.Http.dll
+F:\RuiRuiQQ\MyQQ\bin\Debug\Newtonsoft.Json.dll
+F:\RuiRuiQQ\MyQQ\bin\Debug\System.Data.SQLite.dll
+F:\RuiRuiQQ\MyQQ\obj\Debug\MyQQ.csprojResolveAssemblyReference.cache
+F:\RuiRuiQQ\MyQQ\obj\Debug\MyQQ.ChatBox.resources
+F:\RuiRuiQQ\MyQQ\obj\Debug\MyQQ.Login.resources
+F:\RuiRuiQQ\MyQQ\obj\Debug\MyQQ.MainForm.resources
+F:\RuiRuiQQ\MyQQ\obj\Debug\MyQQ.Properties.Resources.resources
+F:\RuiRuiQQ\MyQQ\obj\Debug\MyQQ.csproj.GenerateResource.Cache
+F:\RuiRuiQQ\MyQQ\obj\Debug\MyQQ.exe
+F:\RuiRuiQQ\MyQQ\obj\Debug\MyQQ.pdb

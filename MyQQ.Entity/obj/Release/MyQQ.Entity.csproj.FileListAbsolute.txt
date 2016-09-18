@@ -1,0 +1,8 @@
+F:\RuiRuiQQ\RuiRuiQQ\MyQQEntity\bin\Release\MyQQ.Entity.dll
+F:\RuiRuiQQ\RuiRuiQQ\MyQQEntity\bin\Release\MyQQ.Entity.pdb
+F:\RuiRuiQQ\RuiRuiQQ\MyQQEntity\obj\Release\MyQQ.Entity.dll
+F:\RuiRuiQQ\RuiRuiQQ\MyQQEntity\obj\Release\MyQQ.Entity.pdb
+F:\RuiRuiQQ\MyQQ.Entity\bin\Release\MyQQ.Entity.dll
+F:\RuiRuiQQ\MyQQ.Entity\bin\Release\MyQQ.Entity.pdb
+F:\RuiRuiQQ\MyQQ.Entity\obj\Release\MyQQ.Entity.dll
+F:\RuiRuiQQ\MyQQ.Entity\obj\Release\MyQQ.Entity.pdb
