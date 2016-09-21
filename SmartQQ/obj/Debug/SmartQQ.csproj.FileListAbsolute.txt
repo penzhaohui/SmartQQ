@@ -9,3 +9,8 @@ F:\SmartQQ\SmartQQ\bin\Debug\SmartQQ.pdb
 F:\SmartQQ\SmartQQ\obj\Debug\SmartQQ.dll
 F:\SmartQQ\SmartQQ\obj\Debug\SmartQQ.pdb
 F:\SmartQQ\SmartQQ\obj\Debug\SmartQQ.csprojResolveAssemblyReference.cache
+D:\SmartQQ\SmartQQ\SmartQQ\bin\Debug\SmartQQ.dll
+D:\SmartQQ\SmartQQ\SmartQQ\bin\Debug\SmartQQ.pdb
+D:\SmartQQ\SmartQQ\SmartQQ\obj\Debug\SmartQQ.csprojResolveAssemblyReference.cache
+D:\SmartQQ\SmartQQ\SmartQQ\obj\Debug\SmartQQ.dll
+D:\SmartQQ\SmartQQ\SmartQQ\obj\Debug\SmartQQ.pdb

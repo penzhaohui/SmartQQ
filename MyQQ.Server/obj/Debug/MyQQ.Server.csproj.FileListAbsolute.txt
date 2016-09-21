@@ -20,3 +20,14 @@ F:\SmartQQ\MyQQ.Server\bin\MyQQ.Entity.pdb
 F:\SmartQQ\MyQQ.Server\obj\Debug\MyQQ.Server.csprojResolveAssemblyReference.cache
 F:\SmartQQ\MyQQ.Server\obj\Debug\MyQQServer.dll
 F:\SmartQQ\MyQQ.Server\obj\Debug\MyQQServer.pdb
+D:\SmartQQ\SmartQQ\MyQQ.Server\bin\MyQQServer.dll
+D:\SmartQQ\SmartQQ\MyQQ.Server\bin\MyQQServer.pdb
+D:\SmartQQ\SmartQQ\MyQQ.Server\bin\MyQQ.Entity.dll
+D:\SmartQQ\SmartQQ\MyQQ.Server\bin\SmartQQ.dll
+D:\SmartQQ\SmartQQ\MyQQ.Server\bin\System.Data.SQLite.dll
+D:\SmartQQ\SmartQQ\MyQQ.Server\bin\Newtonsoft.Json.dll
+D:\SmartQQ\SmartQQ\MyQQ.Server\bin\SmartQQ.pdb
+D:\SmartQQ\SmartQQ\MyQQ.Server\bin\MyQQ.Entity.pdb
+D:\SmartQQ\SmartQQ\MyQQ.Server\obj\Debug\MyQQ.Server.csprojResolveAssemblyReference.cache
+D:\SmartQQ\SmartQQ\MyQQ.Server\obj\Debug\MyQQServer.dll
+D:\SmartQQ\SmartQQ\MyQQ.Server\obj\Debug\MyQQServer.pdb

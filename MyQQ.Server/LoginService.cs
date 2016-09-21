@@ -10,6 +10,7 @@ using SmartQQ;
 using MyQQ.Entity;
 using MyQQ.Server.Util;
 using SmartQQ.model;
+using MyQQ.Util;
 
 namespace MyQQ
 {
@@ -19,10 +20,12 @@ namespace MyQQ
     public class LoginService
     {
         readonly SmartQQ.LoginService loginService = null;
+        readonly MyQQDAL myQQDAL = null;
 
         LoginService()
         {
-            loginService = new SmartQQ.LoginService();           
+            loginService = new SmartQQ.LoginService();
+            myQQDAL = new MyQQDAL();
         }
 
         [OperationContract]
@@ -98,11 +101,22 @@ namespace MyQQ
             smartQQWarapper = accountService.GetQQProfile();
             CacheUtil.Add(token, smartQQWarapper);
 
+            
+            smartQQWarapper = accountService.GetQQProfile();
+            System.Console.WriteLine("Initialize QQ profile successfully.");
+
+            smartQQWarapper.Friends = accountService.GetFriendList(true);
+            System.Console.WriteLine("Initialize QQ friends successfully.");
+
             smartQQWarapper.GroupAccounts = accountService.GetGroupList(true);
+            System.Console.WriteLine("Initialize QQ groups successfully.");
+
             smartQQWarapper.DiscussionAccounts = accountService.GetDiscussionGroupList(true);
+            System.Console.WriteLine("Initialize QQ discussions successfully.");
 
             CacheUtil.Update(token, smartQQWarapper);
 
+            myQQDAL.InitializedSmartQQ(smartQQWarapper);
             System.Console.WriteLine("Initialize MyQQ context successfully.");
         }
     }

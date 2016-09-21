@@ -7,3 +7,7 @@ F:\SmartQQ\MyQQ.Entity\bin\Debug\MyQQ.Entity.dll
 F:\SmartQQ\MyQQ.Entity\bin\Debug\MyQQ.Entity.pdb
 F:\SmartQQ\MyQQ.Entity\obj\Debug\MyQQ.Entity.dll
 F:\SmartQQ\MyQQ.Entity\obj\Debug\MyQQ.Entity.pdb
+D:\SmartQQ\SmartQQ\MyQQ.Entity\bin\Debug\MyQQ.Entity.dll
+D:\SmartQQ\SmartQQ\MyQQ.Entity\bin\Debug\MyQQ.Entity.pdb
+D:\SmartQQ\SmartQQ\MyQQ.Entity\obj\Debug\MyQQ.Entity.dll
+D:\SmartQQ\SmartQQ\MyQQ.Entity\obj\Debug\MyQQ.Entity.pdb
