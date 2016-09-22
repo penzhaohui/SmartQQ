@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,5 +40,6 @@ namespace SmartQQ.model
         public List<QQAccount> Friends { get; set; }
         public List<GroupAccount> GroupAccounts { get; set; }
         public List<DiscussionAccount> DiscussionAccounts { get; set; }
+        public CookieContainer CookieContainer { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace MyQQ.Server.Util
 {
     public class CacheUtil
     {
-        private static readonly Cache Cache = HttpRuntime.Cache;
+        private static Cache Cache = HttpRuntime.Cache;
 
         /// <summary>
         /// Check if the specified cache key exists or not

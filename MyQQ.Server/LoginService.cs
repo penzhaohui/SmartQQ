@@ -29,16 +29,54 @@ namespace MyQQ
         }
 
         [OperationContract]
-        [WebGet(UriTemplate = "/qrcode", ResponseFormat = WebMessageFormat.Json)]
-        public Stream GetQRCodeImage()
-        {            return loginService.GetQRCodeStream();
+        [WebGet(UriTemplate = "/getclientid", ResponseFormat = WebMessageFormat.Json)]
+        public ResponseWrapper<string> GetClientId()
+        {
+            ResponseWrapper<string> response = new ResponseWrapper<string>();
+            string clientId = TokenUtil.NewToken();
+
+            MyQQEntity myQQEntity = new MyQQEntity();            
+            myQQEntity.ClientID = clientId;
+            myQQEntity.IsInitialized = false;
+
+            CacheUtil.Add(clientId, myQQEntity);
+
+            response.ReturnCode = 1;
+            response.Message = "Get client id successfully.";
+            response.InnerMessage = "Please remember to append the client id value for the next api request.";
+            response.Result = clientId;
+
+            return response;
         }
 
         [OperationContract]
-        [WebGet(UriTemplate = "/qrcode/status", ResponseFormat = WebMessageFormat.Json)]
-        public ResponseWrapper<LoginStatus> GetQRCodeStatus()
+        [WebGet(UriTemplate = "/qrcode/{clientId}", ResponseFormat = WebMessageFormat.Json)]
+        public Stream GetQRCodeImage(string clientId)
+        {
+            if (CacheUtil.Exists(clientId) == false)
+            {
+                return null;
+            }
+
+            return loginService.GetQRCodeStream();
+        }
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/qrcode/status/{clientId}", ResponseFormat = WebMessageFormat.Json)]
+        public ResponseWrapper<LoginStatus> GetQRCodeStatus(string clientId)
         {
             ResponseWrapper<LoginStatus> response = new ResponseWrapper<LoginStatus>();
+
+            if (CacheUtil.Exists(clientId) == false)
+            {
+                response.ReturnCode = 0;
+                response.Message = "Login Failed";
+                response.InnerMessage = "You might not forget pass the client id.";
+                response.Result = null;
+
+                return response;
+            }
+
             LoginStatus loginStatus = new LoginStatus();
             var result = loginService.CheckQRCodeStatus();
 
@@ -78,9 +116,8 @@ namespace MyQQ
                     response.ReturnCode = 1;
                     response.Message = "";
                     response.InnerMessage = "已经确认";
-                    loginStatus.Token = TokenUtil.NewToken();
 
-                    ProcessLoginRequest(loginStatus.Token, result.RedirectUrl);
+                    ProcessLoginRequest(clientId, result.RedirectUrl);
 
                     break;
             }
@@ -93,28 +130,42 @@ namespace MyQQ
         /// </summary>
         /// <param name="token"></param>
         /// <param name="redirectUrl"></param>
-        private async void ProcessLoginRequest(string token, string redirectUrl)
+        private async void ProcessLoginRequest(string clientId, string redirectUrl)
         {
+            var MyQQEntity = (MyQQEntity)CacheUtil.Get(clientId);
+            lock (MyQQEntity)
+            {
+                if (MyQQEntity.IsInitialized)
+                {
+                    return;
+                }
+                else
+                {
+                    MyQQEntity.IsInitialized = true;
+                    CacheUtil.Update(clientId, MyQQEntity);
+                }
+            }
+
             var smartQQWarapper = loginService.ProcessLoginRequest(redirectUrl);            
             
             SmartQQ.AccountService accountService = new SmartQQ.AccountService(smartQQWarapper);
-            smartQQWarapper = accountService.GetQQProfile();
-            CacheUtil.Add(token, smartQQWarapper);
 
-            
+            smartQQWarapper.GroupAccounts = accountService.GetGroupList(true);
+            System.Console.WriteLine("Initialize QQ groups successfully.");
+                        
             smartQQWarapper = accountService.GetQQProfile();
             System.Console.WriteLine("Initialize QQ profile successfully.");
 
             smartQQWarapper.Friends = accountService.GetFriendList(true);
             System.Console.WriteLine("Initialize QQ friends successfully.");
 
-            smartQQWarapper.GroupAccounts = accountService.GetGroupList(true);
-            System.Console.WriteLine("Initialize QQ groups successfully.");
-
             smartQQWarapper.DiscussionAccounts = accountService.GetDiscussionGroupList(true);
             System.Console.WriteLine("Initialize QQ discussions successfully.");
 
-            CacheUtil.Update(token, smartQQWarapper);
+            smartQQWarapper = accountService.GetQQProfile();
+
+            MyQQEntity.SmartQQ = smartQQWarapper;
+            CacheUtil.Update(clientId, MyQQEntity);
 
             myQQDAL.InitializedSmartQQ(smartQQWarapper);
             System.Console.WriteLine("Initialize MyQQ context successfully.");

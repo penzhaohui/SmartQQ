@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyQQ.Client", "MyQQ.Client\MyQQ.Client.csproj", "{2DB996A5-1279-4840-9774-48619AB64BCD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyQQ.Entity", "MyQQ.Entity\MyQQ.Entity.csproj", "{2304D228-4477-4871-BD42-1F852AF4754C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyQQ.Server", "MyQQ.Server\MyQQ.Server.csproj", "{CBE3D423-CDCD-48B7-A94C-695122653F79}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2DB996A5-1279-4840-9774-48619AB64BCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2DB996A5-1279-4840-9774-48619AB64BCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2DB996A5-1279-4840-9774-48619AB64BCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2DB996A5-1279-4840-9774-48619AB64BCD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2304D228-4477-4871-BD42-1F852AF4754C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2304D228-4477-4871-BD42-1F852AF4754C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2304D228-4477-4871-BD42-1F852AF4754C}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -64,6 +64,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="External DLLs\Newtonsoft.Json.dll" />
     <Content Include="External DLLs\System.Data.SQLite.dll" />
     <Content Include="Global.asax" />
     <Content Include="Software\SQLiteExpertPersSetup64.exe" />

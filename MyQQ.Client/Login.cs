@@ -16,10 +16,11 @@ namespace MyQQ.Client
 {
     public partial class Login : Form
     {
+        private readonly static string ClientID = GetClientID();
         private static readonly string BASE_IMAGE_SERVICE = "http://localhost:4788/";
+                
         // 实例化Timer类，设置间隔时间为10000毫秒；
         System.Timers.Timer LoginStatusTimer = new System.Timers.Timer(10000);
-        public static string AccessToken = string.Empty;
 
         public Login()
         {
@@ -32,15 +33,35 @@ namespace MyQQ.Client
             this.LoginStatusTimer.Elapsed += new System.Timers.ElapsedEventHandler(CheckQRCodeStatus);// 到达时间的时候执行事件；
         }
 
+        private static string GetClientID()
+        {
+            String strSvcURI = "http://localhost:4788/" + "login/getclientid";
+
+            HttpClient client = new HttpClient();
+
+            HttpResponseMessage responseMsg = client.Get(strSvcURI);
+            responseMsg.EnsureStatusIsSuccessful();
+
+            String strJson = responseMsg.Content.ReadAsString();
+
+            ResponseWrapper<string> loginStatusResult = JsonConvert.DeserializeObject<ResponseWrapper<string>>(strJson);
+            if (loginStatusResult.ReturnCode == 1)
+            {
+                return loginStatusResult.Result;
+            }
+
+            return "";
+        }
+        
         public void CheckQRCodeStatus(object source, System.Timers.ElapsedEventArgs e)
         {
             // If the timer is paused, skip other request
-            if (this.LoginStatusTimer.Enabled == false || !String.IsNullOrEmpty(AccessToken))
+            if (this.LoginStatusTimer.Enabled == false || String.IsNullOrEmpty(ClientID))
             {
                 return;
             }
 
-            String strSvcURI = "http://localhost:4788/" + "login/qrcode/status";
+            String strSvcURI = "http://localhost:4788/" + "login/qrcode/status/" + ClientID;
 
             HttpClient client = new HttpClient();
             
@@ -53,8 +74,7 @@ namespace MyQQ.Client
             if (loginStatusResult.ReturnCode == 1)
             {
                 // Pause the timer
-                this.LoginStatusTimer.Enabled = false;
-                AccessToken = loginStatusResult.Result.Token;
+                this.LoginStatusTimer.Enabled = false;               
                 MessageBox.Show("Login Successfully.");
             }
             else
@@ -77,7 +97,7 @@ namespace MyQQ.Client
         private void GenerateQRCode()
         {
             
-            String strSvcURI = String.Format("{0}login/qrcode", BASE_IMAGE_SERVICE);
+            String strSvcURI = String.Format("{0}login/qrcode/{1}", BASE_IMAGE_SERVICE, ClientID);
             HttpClient client = new HttpClient();
             HttpResponseMessage responseMsg = client.Get(strSvcURI);
             responseMsg.EnsureStatusIsSuccessful();
@@ -90,11 +110,10 @@ namespace MyQQ.Client
 
         private async void Login_Click(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(AccessToken))
+            if (!String.IsNullOrEmpty(ClientID))
             {
                 this.Hide();
-                MainForm mainForm = new MainForm();
-                mainForm.AccessToken = AccessToken;
+                MainForm mainForm = new MainForm();               
                 mainForm.Show();
             }
         }
