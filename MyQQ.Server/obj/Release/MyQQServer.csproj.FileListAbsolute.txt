@@ -1,8 +1,0 @@
-F:\RuiRuiQQ\RuiRuiQQ\MyQQServer\bin\MyQQServer.dll
-F:\RuiRuiQQ\RuiRuiQQ\MyQQServer\bin\MyQQServer.pdb
-F:\RuiRuiQQ\RuiRuiQQ\MyQQServer\bin\SmartQQ.dll
-F:\RuiRuiQQ\RuiRuiQQ\MyQQServer\bin\Newtonsoft.Json.dll
-F:\RuiRuiQQ\RuiRuiQQ\MyQQServer\bin\SmartQQ.pdb
-F:\RuiRuiQQ\RuiRuiQQ\MyQQServer\obj\Release\MyQQServer.csprojResolveAssemblyReference.cache
-F:\RuiRuiQQ\RuiRuiQQ\MyQQServer\obj\Release\MyQQServer.dll
-F:\RuiRuiQQ\RuiRuiQQ\MyQQServer\obj\Release\MyQQServer.pdb
