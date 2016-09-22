@@ -19,6 +19,12 @@ namespace MyQQ.Util
 
         public bool InitializedSmartQQ(SmartQQWrapper smartQQWarapper)
         {
+            if (smartQQWarapper == null)
+            {
+                System.Console.WriteLine("No QQ Account needs to be initialized into the SQLite database.");
+                return false;
+            }
+
             QQAccount qqProfile = new QQAccount();
             qqProfile.uin = smartQQWarapper.uin;
             qqProfile.name = smartQQWarapper.nick;
@@ -48,9 +54,40 @@ namespace MyQQ.Util
 
             addQQAccount(qqProfile);
 
-            foreach (var friend in smartQQWarapper.Friends)
+            if (smartQQWarapper.Friends != null)
             {
-                addQQAccount(friend);
+                foreach (var friend in smartQQWarapper.Friends)
+                {
+                    addQQAccount(friend);
+                }
+            }
+            else
+            {
+                System.Console.WriteLine("No friend on the QQ : " + smartQQWarapper.QQNumber);
+            }
+
+            if (smartQQWarapper.GroupAccounts != null)
+            {
+                foreach (var groupAccount in smartQQWarapper.GroupAccounts)
+                {
+                    addQQGroupAccount(groupAccount);
+                }
+            }
+            else
+            {
+                System.Console.WriteLine("No group on the QQ : " + smartQQWarapper.QQNumber);
+            }
+
+            if (smartQQWarapper.DiscussionAccounts != null)
+            {
+                foreach (var discussionAccount in smartQQWarapper.DiscussionAccounts)
+                {
+                    addQQDiscussionAccount(discussionAccount);
+                }
+            }
+            else
+            {
+                System.Console.WriteLine("No discussion group on the QQ : " + smartQQWarapper.QQNumber);
             }
   
             return true;
@@ -131,6 +168,7 @@ namespace MyQQ.Util
                 {
                     return true;
                 }
+
                 return false;
             }
             catch
@@ -148,19 +186,19 @@ namespace MyQQ.Util
 
         #region QQ Group Account
 
-        private bool addQQGroupAccount(string qqNum)
+        private bool addQQGroupAccount(GroupAccount groupAccount)
         {
             string sqlInsertQQGroupAccount = @"INSERT INTO QQGroupAccount (flag, gid, code, name, createtime, owner, face, memo, markname, level)
                                                VALUES (@flag, @gid, @code, @name, @createtime, @owner, @face, @memo, @markname, @level) ";
-            string flag = "";
-            string gid = "";
-            string code = "";
-            string name = "";
-            string createtime = "";
-            string owner = "";
-            int face = 0;
-            string memo = "";
-            string markname = "";
+            string flag = groupAccount.flag;
+            string gid = groupAccount.gid;
+            string code = groupAccount.code;
+            string name = groupAccount.name;
+            string createtime = groupAccount.createtime;
+            string owner = groupAccount.owner;
+            int face = groupAccount.face;
+            string memo = groupAccount.memo;
+            string markname = groupAccount.markname;
             int level = 0;
 
             SQLiteParameter[] paraArray = new SQLiteParameter[10];
@@ -180,6 +218,18 @@ namespace MyQQ.Util
             {
                 if (sqlHelper.ExecuteNonQuery(sqlInsertQQGroupAccount, CommandType.Text, paraArray) > 0)
                 {
+                    if (groupAccount.members != null)
+                    {
+                        foreach (var member in groupAccount.members)
+                        {
+                            addQQGroupMember(member);
+                        }
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("No group member group on the QQ group : " + groupAccount.name);
+                    }
+
                     return true;
                 }
                 return false;
@@ -195,17 +245,17 @@ namespace MyQQ.Util
             return false;
         }
 
-        private bool addQQGroupMember(string qqNum)
+        private bool addQQGroupMember(GroupMember groupMember)
         {
             string sqlInsertQQGroupMember = @"INSERT INTO QQGroupMember ( nick, card, province, gender, uin, country, city)
                                               VALUES(@nick, @card, @province, @gender, @uin, @country, @city)";
-            string nick = "";
-            string card = "";
-            string province = "";
-            string gender = "";
-            string uin = "";
-            string country = "";
-            string city = "";
+            string nick = groupMember.nick;
+            string card = groupMember.card;
+            string province = groupMember.province;
+            string gender = groupMember.gender;
+            string uin = groupMember.uin;
+            string country = groupMember.country;
+            string city = groupMember.city;
 
             SQLiteParameter[] paraArray = new SQLiteParameter[7];
 
@@ -239,12 +289,12 @@ namespace MyQQ.Util
 
         #region QQ Discussion
 
-        private bool addQQDiscussionAccount(string qqNum)
+        private bool addQQDiscussionAccount(DiscussionAccount discussionAccount)
         {
             string sqlInsertQQDiscussionAccount = @"INSERT INTO QQDiscussionAccount (did, name)
                                                     VALUES (@did, @name)";
-            string did = "";
-            string name = "";
+            string did = discussionAccount.did;
+            string name = discussionAccount.name;
 
             SQLiteParameter[] paraArray = new SQLiteParameter[2];
 
@@ -255,6 +305,18 @@ namespace MyQQ.Util
             {
                 if (sqlHelper.ExecuteNonQuery(sqlInsertQQDiscussionAccount, CommandType.Text, paraArray) > 0)
                 {
+                    if (discussionAccount.members != null)
+                    {
+                        foreach (var discussionMember in discussionAccount.members)
+                        {
+                            addQQDiscussionMember(discussionMember);
+                        }
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("No group member group on the discussion group : " + discussionAccount.name);
+                    }
+
                     return true;
                 }
                 return false;
@@ -270,13 +332,13 @@ namespace MyQQ.Util
             return false;
         }
 
-        private bool addQQDiscussionMember(string qqNum)
+        private bool addQQDiscussionMember(DiscussionMember discussionMember)
         {
             string sqlInsertQQDiscussionMember = @"INSERT INTO QQDiscussionMember (uid, name, ruin)
                                                     VALUES (@uid, @name, @ruin)";
-            string uid = "";
-            string name = "";
-            string ruin = "";
+            string uid = discussionMember.uid;
+            string name = discussionMember.name;
+            string ruin = discussionMember.ruin;
 
             SQLiteParameter[] paraArray = new SQLiteParameter[3];
 
