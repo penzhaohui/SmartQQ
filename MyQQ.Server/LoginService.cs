@@ -149,15 +149,15 @@ namespace MyQQ
             var smartQQWarapper = loginService.ProcessLoginRequest(redirectUrl);            
             
             SmartQQ.AccountService accountService = new SmartQQ.AccountService(smartQQWarapper);
-
-            smartQQWarapper.FriendAccounts = accountService.GetFriendList(true);
-            System.Console.WriteLine("Initialize QQ friends successfully.");
-
+            
             smartQQWarapper.GroupAccounts = accountService.GetGroupList(true);
             System.Console.WriteLine("Initialize QQ groups successfully.");            
 
             smartQQWarapper.DiscussionAccounts = accountService.GetDiscussionGroupList(true);
-            System.Console.WriteLine("Initialize QQ discussions successfully.");            
+            System.Console.WriteLine("Initialize QQ discussions successfully.");
+
+            smartQQWarapper.FriendAccounts = accountService.GetFriendList(true);
+            System.Console.WriteLine("Initialize QQ friends successfully.");
 
             smartQQWarapper = accountService.GetQQProfile();
             System.Console.WriteLine("Initialize QQ profile successfully.");  

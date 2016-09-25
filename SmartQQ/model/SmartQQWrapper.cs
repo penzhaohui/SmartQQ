@@ -9,7 +9,6 @@ namespace SmartQQ.model
 {
     public class SmartQQWrapper
     {
-        public string UIN { get; set; }
         public string Name { get; set; }
         public string QQAccount { get; set; }
         public bool Online { get; set; }

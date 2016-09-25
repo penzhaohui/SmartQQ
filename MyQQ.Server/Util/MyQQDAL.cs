@@ -26,7 +26,7 @@ namespace MyQQ.Util
             }
 
             AddQQAccountProfile(smartQQWarapper);
-            string qquin = smartQQWarapper.UIN;
+            string qquin = smartQQWarapper.QQAccount;
 
             if (smartQQWarapper.FriendAccounts != null)
             {
@@ -74,12 +74,11 @@ namespace MyQQ.Util
         /// <returns></returns>
         private bool AddQQAccountProfile(SmartQQWrapper smartQQWarapper)
         {
-            string sqlInsertQQAccount = @"INSERT INTO QQAccount ( Uin, Name, Account, Online, PTWebqq, WFWebqq, SessionId, Hash, 
+            string sqlInsertQQAccount = @"INSERT INTO QQAccount ( Account, Name, Online, PTWebqq, WFWebqq, SessionId, Hash, 
                                                                          Initialized, LastUpdateTime, FriendAccount, GroupCount, DiscussionCount)
-                                                 VALUES (@Uin, @Name, @Account, @Online, @PTWebqq, @WFWebqq, @SessionId, @Hash, 
+                                                 VALUES (@Account, @Name, @Online, @PTWebqq, @WFWebqq, @SessionId, @Hash, 
                                                          @Initialized, @LastUpdateTime, @FriendAccount, @GroupCount, @DiscussionCount)";
 
-            string uin = smartQQWarapper.UIN;
             string name = smartQQWarapper.Name;
             string account = smartQQWarapper.QQAccount;
             bool online = smartQQWarapper.Online;
@@ -98,27 +97,26 @@ namespace MyQQ.Util
                 initialized = true;
             }
 
-            SQLiteParameter[] paraArray = new SQLiteParameter[13];
+            SQLiteParameter[] paraArray = new SQLiteParameter[12];
 
-            paraArray[0] = sqlHelper.InitSQLiteParameter("@Uin", ParameterDirection.Input, uin);
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@Account", ParameterDirection.Input, account);
             paraArray[1] = sqlHelper.InitSQLiteParameter("@Name", ParameterDirection.Input, name);
-            paraArray[2] = sqlHelper.InitSQLiteParameter("@Account", ParameterDirection.Input, account);
-            paraArray[3] = sqlHelper.InitSQLiteParameter("@Online", ParameterDirection.Input, online);
-            paraArray[4] = sqlHelper.InitSQLiteParameter("@PTWebqq", ParameterDirection.Input, ptwebqq);
-            paraArray[5] = sqlHelper.InitSQLiteParameter("@WFWebqq", ParameterDirection.Input, wfwebqq);
-            paraArray[6] = sqlHelper.InitSQLiteParameter("@SessionId", ParameterDirection.Input, sessionId);
-            paraArray[7] = sqlHelper.InitSQLiteParameter("@Hash", ParameterDirection.Input, hash);
-            paraArray[8] = sqlHelper.InitSQLiteParameter("@Initialized", ParameterDirection.Input, initialized);
-            paraArray[9] = sqlHelper.InitSQLiteParameter("@LastUpdateTime", ParameterDirection.Input, lastUpdateTime);
-            paraArray[10] = sqlHelper.InitSQLiteParameter("@FriendAccount", ParameterDirection.Input, friendCount);
-            paraArray[11] = sqlHelper.InitSQLiteParameter("@GroupCount", ParameterDirection.Input, groupCount);
-            paraArray[12] = sqlHelper.InitSQLiteParameter("@DiscussionCount", ParameterDirection.Input, dicussionCount);
+            paraArray[2] = sqlHelper.InitSQLiteParameter("@Online", ParameterDirection.Input, online);
+            paraArray[3] = sqlHelper.InitSQLiteParameter("@PTWebqq", ParameterDirection.Input, ptwebqq);
+            paraArray[4] = sqlHelper.InitSQLiteParameter("@WFWebqq", ParameterDirection.Input, wfwebqq);
+            paraArray[5] = sqlHelper.InitSQLiteParameter("@SessionId", ParameterDirection.Input, sessionId);
+            paraArray[6] = sqlHelper.InitSQLiteParameter("@Hash", ParameterDirection.Input, hash);
+            paraArray[7] = sqlHelper.InitSQLiteParameter("@Initialized", ParameterDirection.Input, initialized);
+            paraArray[8] = sqlHelper.InitSQLiteParameter("@LastUpdateTime", ParameterDirection.Input, lastUpdateTime);
+            paraArray[9] = sqlHelper.InitSQLiteParameter("@FriendAccount", ParameterDirection.Input, friendCount);
+            paraArray[10] = sqlHelper.InitSQLiteParameter("@GroupCount", ParameterDirection.Input, groupCount);
+            paraArray[11] = sqlHelper.InitSQLiteParameter("@DiscussionCount", ParameterDirection.Input, dicussionCount);
 
             if (sqlHelper.ExecuteNonQuery(sqlInsertQQAccount, CommandType.Text, paraArray) > 0)
             {
-                string sqlInsertQQAccountProfile = @"INSERT INTO QQAccountProfile (Uin, Birthday, Blood, City, College, Country, Email, Gender, Homepage,
+                string sqlInsertQQAccountProfile = @"INSERT INTO QQAccountProfile (QQAccount, Birthday, Blood, City, College, Country, Email, Gender, Homepage,
                                                                                    Lnick, Mobile, Nick, Occupation, Personal, Phone, Province, Shengxiao)
-                                                     VALUES (@Uin, @Birthday, @Blood, @City, @College, @Country, @Email, @Gender, @Homepage,
+                                                     VALUES (@QQAccount, @Birthday, @Blood, @City, @College, @Country, @Email, @Gender, @Homepage,
                                                                                    @Lnick, @Mobile, @Nick, @Occupation, @Personal, @Phone, @Province, @Shengxiao)";
 
                 DateTime birthday = smartQQWarapper.Birthday;
@@ -139,8 +137,8 @@ namespace MyQQ.Util
                 int shengxiao = smartQQWarapper.Shengxiao;
 
                 SQLiteParameter[] paraArray1 = new SQLiteParameter[17];
-                
-                paraArray1[0] = sqlHelper.InitSQLiteParameter("@Uin", ParameterDirection.Input, uin);
+
+                paraArray1[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, account);
                 paraArray1[1] = sqlHelper.InitSQLiteParameter("@Birthday", ParameterDirection.Input, birthday);
                 paraArray1[2] = sqlHelper.InitSQLiteParameter("@Blood", ParameterDirection.Input, blood);
                 paraArray1[3] = sqlHelper.InitSQLiteParameter("@City", ParameterDirection.Input, city);
@@ -175,11 +173,11 @@ namespace MyQQ.Util
             return false;
         }
 
-        private bool addQQFriendAccount(string qquin, QQFriendAccount account)
+        private bool addQQFriendAccount(string qqaccount, QQFriendAccount account)
         {
-            string sqlInsertQQAccount = @"INSERT INTO QQFirends (Uin, Account, QQUin, Brithday, Blood, City, College, Country, Email,
+            string sqlInsertQQAccount = @"INSERT INTO QQFirends (Uin, Account, QQAccount, Brithday, Blood, City, College, Country, Email,
                                                                  Gender, Homepage, Mobile, Nick, Occupation, Personal, Phone, Province) 
-                                           VALUES (@Uin, @Account, @QQUin, @Brithday, @Blood, @City, @College, @Country, @Email,
+                                           VALUES (@Uin, @Account, @QQAccount, @Brithday, @Blood, @City, @College, @Country, @Email,
                                                                  @Gender, @Homepage, @Mobile, @Nick, @Occupation, @Personal, @Phone, @Province)";
             string uin = account.Uin;
             string qqnum = account.Account;            
@@ -202,7 +200,7 @@ namespace MyQQ.Util
 
             paraArray[0] = sqlHelper.InitSQLiteParameter("@Uin", ParameterDirection.Input, uin);
             paraArray[1] = sqlHelper.InitSQLiteParameter("@Account", ParameterDirection.Input, qqnum);
-            paraArray[2] = sqlHelper.InitSQLiteParameter("@QQUin", ParameterDirection.Input, qquin);
+            paraArray[2] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqaccount);
             paraArray[3] = sqlHelper.InitSQLiteParameter("@Brithday", ParameterDirection.Input, birthday);
             paraArray[4] = sqlHelper.InitSQLiteParameter("@Blood", ParameterDirection.Input, blood);
             paraArray[5] = sqlHelper.InitSQLiteParameter("@City", ParameterDirection.Input, city);
@@ -242,34 +240,35 @@ namespace MyQQ.Util
 
         #region QQ Group Account
 
-        private bool addQQGroupAccount(string qquin, GroupAccount groupAccount)
+        private bool addQQGroupAccount(string qqaacount, GroupAccount groupAccount)
         {
-            string sqlInsertQQGroupAccount = @"INSERT INTO QQGroupAccount (Gid, QQUin, Name, Code, CreateTime, FingerMemo, Flag, Level, Owner, Memo, MemberCount)
-                                               VALUES (@Gid, @QQUin, @Name, @Code, @CreateTime, @FingerMemo, @Flag, @Level, @Owner, @Memo, @MemberCount) ";
+            string sqlInsertQQGroupAccount = @"INSERT INTO QQGroupAccount (Gid, QQAccount, Name, Code, CreateTime, FingerMemo, Flag, Level, Owner, Memo, MemberCount)
+                                               VALUES (@Gid, @QQAccount, @Name, @Code, @CreateTime, @FingerMemo, @Flag, @Level, @Owner, @Memo, @MemberCount) ";
 
             string gid = groupAccount.Gid;           
             string name = groupAccount.Name;
             string code = groupAccount.Code;            
             string createtime = groupAccount.CreateTime;
-            string fingerMemo = groupAccount.FingerMemo;            
-            string memo = groupAccount.FingerMemo;
+            string fingerMemo = groupAccount.FingerMemo == null ? "" : groupAccount.FingerMemo;
+            string memo = groupAccount.Memo == null ? "" : groupAccount.Memo;
             string flag = groupAccount.Flag;
             int level = groupAccount.Level;
             string owner = groupAccount.Owner;
             int memberCount = groupAccount.Members != null ? groupAccount.Members.Count : 0;
 
-            SQLiteParameter[] paraArray = new SQLiteParameter[10];
+            SQLiteParameter[] paraArray = new SQLiteParameter[11];
 
             paraArray[0] = sqlHelper.InitSQLiteParameter("@Gid", ParameterDirection.Input, gid);
-            paraArray[1] = sqlHelper.InitSQLiteParameter("@QQUin", ParameterDirection.Input, qquin);
+            paraArray[1] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqaacount);
             paraArray[2] = sqlHelper.InitSQLiteParameter("@Name", ParameterDirection.Input, name);
             paraArray[3] = sqlHelper.InitSQLiteParameter("@Code", ParameterDirection.Input, code);
             paraArray[4] = sqlHelper.InitSQLiteParameter("@CreateTime", ParameterDirection.Input, createtime);
             paraArray[5] = sqlHelper.InitSQLiteParameter("@FingerMemo", ParameterDirection.Input, fingerMemo);
-            paraArray[7] = sqlHelper.InitSQLiteParameter("@Flag", ParameterDirection.Input, flag);
-            paraArray[8] = sqlHelper.InitSQLiteParameter("@Level", ParameterDirection.Input, level);
-            paraArray[9] = sqlHelper.InitSQLiteParameter("@Owner", ParameterDirection.Input, owner);
-            paraArray[9] = sqlHelper.InitSQLiteParameter("@MemberCount", ParameterDirection.Input, memberCount);
+            paraArray[6] = sqlHelper.InitSQLiteParameter("@Flag", ParameterDirection.Input, flag);
+            paraArray[7] = sqlHelper.InitSQLiteParameter("@Level", ParameterDirection.Input, level);
+            paraArray[8] = sqlHelper.InitSQLiteParameter("@Owner", ParameterDirection.Input, owner);
+            paraArray[9] = sqlHelper.InitSQLiteParameter("@Memo", ParameterDirection.Input, memo);
+            paraArray[10] = sqlHelper.InitSQLiteParameter("@MemberCount", ParameterDirection.Input, memberCount);
 
             try
             {
@@ -349,19 +348,19 @@ namespace MyQQ.Util
 
         #region QQ Discussion
 
-        private bool addQQDiscussionAccount(string qquin, DiscussionAccount discussionAccount)
+        private bool addQQDiscussionAccount(string qqaacount, DiscussionAccount discussionAccount)
         {
-            string sqlInsertQQDiscussionAccount = @"INSERT INTO QQDiscussionAccount ( Did, Name, QQUin, MemberCount )
-                                                    VALUES ( @Did, @Name, @QQUin, @MemberCount)";
+            string sqlInsertQQDiscussionAccount = @"INSERT INTO QQDiscussionAccount ( Did, Name, QQAccount, MemberCount )
+                                                    VALUES ( @Did, @Name, @QQAccount, @MemberCount)";
             string did = discussionAccount.Did;
             string name = discussionAccount.Name;
             int memberCount = discussionAccount.Members.Count;
 
-            SQLiteParameter[] paraArray = new SQLiteParameter[2];
+            SQLiteParameter[] paraArray = new SQLiteParameter[4];
 
             paraArray[0] = sqlHelper.InitSQLiteParameter("@Did", ParameterDirection.Input, did);
             paraArray[1] = sqlHelper.InitSQLiteParameter("@Name", ParameterDirection.Input, name);
-            paraArray[2] = sqlHelper.InitSQLiteParameter("@QQUin", ParameterDirection.Input, qquin);
+            paraArray[2] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqaacount);
             paraArray[3] = sqlHelper.InitSQLiteParameter("@MemberCount", ParameterDirection.Input, memberCount);
            
             try
@@ -406,7 +405,7 @@ namespace MyQQ.Util
             string status = discussionMember.Status;
             
 
-            SQLiteParameter[] paraArray = new SQLiteParameter[3];
+            SQLiteParameter[] paraArray = new SQLiteParameter[5];
 
             paraArray[0] = sqlHelper.InitSQLiteParameter("@RUin", ParameterDirection.Input, ruin);
             paraArray[1] = sqlHelper.InitSQLiteParameter("@Did", ParameterDirection.Input, did);
