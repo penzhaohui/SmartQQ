@@ -63,21 +63,21 @@ namespace MyQQ
 
         [OperationContract]
         [WebGet(UriTemplate = "/qrcode/status/{clientId}", ResponseFormat = WebMessageFormat.Json)]
-        public ResponseWrapper<LoginStatus> GetQRCodeStatus(string clientId)
+        public ResponseWrapper<LoginEntity> GetQRCodeStatus(string clientId)
         {
-            ResponseWrapper<LoginStatus> response = new ResponseWrapper<LoginStatus>();
+            ResponseWrapper<LoginEntity> response = new ResponseWrapper<LoginEntity>();
 
             if (CacheUtil.Exists(clientId) == false)
             {
                 response.ReturnCode = 0;
                 response.Message = "Login Failed";
-                response.InnerMessage = "You might not forget pass the client id.";
+                response.InnerMessage = "The client id is expired or does not exists.";
                 response.Result = null;
 
                 return response;
             }
 
-            LoginStatus loginStatus = new LoginStatus();
+            LoginEntity loginEntity = new LoginEntity();
             var result = loginService.CheckQRCodeStatus();
 
             if (result == null)
@@ -90,10 +90,10 @@ namespace MyQQ
                 return response;
             }
 
-            loginStatus.StatusCode = result.StatusCode;
-            loginStatus.StatusText = result.StatusText;           
+            loginEntity.StatusCode = result.StatusCode;
+            loginEntity.StatusText = result.StatusText;
            
-            response.Result = loginStatus;
+            response.Result = loginEntity;
 
             switch (result.StatusCode)
             { 

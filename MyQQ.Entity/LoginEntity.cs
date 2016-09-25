@@ -5,10 +5,9 @@ using System.Web;
 
 namespace MyQQ.Entity
 {
-    public class LoginStatus
+    public class LoginEntity
     {
         public string StatusCode { get; set; }
-
         public string StatusText { get; set; }
     }
 }

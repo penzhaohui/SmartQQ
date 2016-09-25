@@ -644,5 +644,154 @@ namespace MyQQ.Util
         }
 
         #endregion
+
+        #region Get Some data for QQ account
+
+        /// <summary>
+        /// Get Friend List By QQ Account
+        /// </summary>
+        /// <param name="qqaccount"></param>
+        /// <returns></returns>
+        public List<FriendEntity> GetFrisendsByQQAccount(string qqaccount)
+        {
+            string getFriendsByQQAccount = "SELECT Account, Nick FROM QQFirends WHERE QQAccount = @QQAccount ";
+
+            List<FriendEntity> friends = new List<FriendEntity>();
+            SQLiteParameter[] paraArray = new SQLiteParameter[1];
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqaccount);
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(getFriendsByQQAccount, CommandType.Text, paraArray))
+            {
+                while (sqlDr.Read())
+                {
+                    FriendEntity friend = new FriendEntity();
+
+                    friend.QQNo = sqlDr.IsDBNull(0) == true ? String.Empty : sqlDr.GetString(0);
+                    friend.Name = sqlDr.IsDBNull(1) == true ? String.Empty : sqlDr.GetString(1);
+
+                    friends.Add(friend);
+                }
+            }
+
+            return friends;
+        }
+
+        /// <summary>
+        /// Get QQ Group List By QQ Account
+        /// </summary>
+        /// <param name="qqaccount"></param>
+        /// <returns></returns>
+        public List<GroupEntity> GetQQGroupsByQQAccount(string qqaccount)
+        {
+            string getFriendsByQQAccount = "SELECT Gid, Name FROM QQGroupAccount WHERE QQAccount = @QQAccount ";
+
+            List<GroupEntity> groups = new List<GroupEntity>();
+            SQLiteParameter[] paraArray = new SQLiteParameter[1];
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqaccount);
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(getFriendsByQQAccount, CommandType.Text, paraArray))
+            {
+                while (sqlDr.Read())
+                {
+                    GroupEntity group = new GroupEntity();
+
+                    group.GroupID = sqlDr.IsDBNull(0) == true ? String.Empty : sqlDr.GetString(0);
+                    group.GroupName = sqlDr.IsDBNull(1) == true ? String.Empty : sqlDr.GetString(1);
+
+                    groups.Add(group);
+                }
+            }
+
+            return groups;
+        }
+
+        /// <summary>
+        /// Get QQ Discussion Group List By QQ Account
+        /// </summary>
+        /// <param name="qqaccount"></param>
+        /// <returns></returns>
+        public List<DiscussionGroupEntity> GetQQDicusstionGroupsByQQAccount(string qqaccount)
+        {
+            string getFriendsByQQAccount = "SELECT Did, Name FROM QQDiscussionAccount WHERE QQAccount = @QQAccount ";
+
+            List<DiscussionGroupEntity> groups = new List<DiscussionGroupEntity>();
+            SQLiteParameter[] paraArray = new SQLiteParameter[1];
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqaccount);
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(getFriendsByQQAccount, CommandType.Text, paraArray))
+            {
+                while (sqlDr.Read())
+                {
+                    DiscussionGroupEntity group = new DiscussionGroupEntity();
+
+                    group.GroupID = sqlDr.IsDBNull(0) == true ? String.Empty : sqlDr.GetString(0);
+                    group.GroupName = sqlDr.IsDBNull(1) == true ? String.Empty : sqlDr.GetString(1);
+
+                    groups.Add(group);
+                }
+            }
+
+            return groups;
+        }
+
+        /// <summary>
+        /// Get QQ Group Member By Group ID
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        public List<GroupMemberEntity> GetQQGroupMembersByGroupId(string groupId)
+        {
+            string getFriendsByQQAccount = "SELECT Uin, Nick, Card FROM QQGroupMember WHERE Gid = @Gid ";
+
+            List<GroupMemberEntity> members = new List<GroupMemberEntity>();
+            SQLiteParameter[] paraArray = new SQLiteParameter[1];
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@Gid", ParameterDirection.Input, groupId);
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(getFriendsByQQAccount, CommandType.Text, paraArray))
+            {
+                while (sqlDr.Read())
+                {
+                    GroupMemberEntity member = new GroupMemberEntity();
+
+                    member.MemberID = sqlDr.IsDBNull(0) == true ? String.Empty : sqlDr.GetString(0);
+                    member.MemberID = sqlDr.IsDBNull(1) == true ? String.Empty : sqlDr.GetString(1);
+
+                    members.Add(member);
+                }
+            }
+
+            return members;
+        }
+
+        /// <summary>
+        /// Get QQ Discussion Group Member By Group ID
+        /// </summary>
+        /// <param name="dicussionGroupId"></param>
+        /// <returns></returns>
+        public List<DicussionGroupMemberEntity> GetQQDicusstionGroupMembersByGroupId(string groupId)
+        {
+            string getFriendsByQQAccount = "SELECT Uin, Name FROM QQDiscussionMember WHERE Gid = @Gid ";
+
+            List<DicussionGroupMemberEntity> members = new List<DicussionGroupMemberEntity>();
+            SQLiteParameter[] paraArray = new SQLiteParameter[1];
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@Gid", ParameterDirection.Input, groupId);
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(getFriendsByQQAccount, CommandType.Text, paraArray))
+            {
+                while (sqlDr.Read())
+                {
+                    DicussionGroupMemberEntity member = new DicussionGroupMemberEntity();
+
+                    member.MemberID = sqlDr.IsDBNull(0) == true ? String.Empty : sqlDr.GetString(0);
+                    member.MemberID = sqlDr.IsDBNull(1) == true ? String.Empty : sqlDr.GetString(1);
+
+                    members.Add(member);
+                }
+            }
+
+            return members;
+        }
+
+        #endregion
     }
 }
