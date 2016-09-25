@@ -149,27 +149,42 @@ namespace MyQQ
             var smartQQWarapper = loginService.ProcessLoginRequest(redirectUrl);            
             
             SmartQQ.AccountService accountService = new SmartQQ.AccountService(smartQQWarapper);
-            
-            smartQQWarapper.GroupAccounts = accountService.GetGroupList(true);
-            System.Console.WriteLine("Initialize QQ groups successfully.");            
 
-            smartQQWarapper.DiscussionAccounts = accountService.GetDiscussionGroupList(true);
-            System.Console.WriteLine("Initialize QQ discussions successfully.");
+            MyQQEntity.QQAccount = smartQQWarapper.QQAccount;
+            myQQDAL.InitializeMyQQEnity(MyQQEntity);
 
-            smartQQWarapper.FriendAccounts = accountService.GetFriendList(true);
-            System.Console.WriteLine("Initialize QQ friends successfully.");
+            if (MyQQEntity.GroupCount == 0)
+            {
+                smartQQWarapper.GroupAccounts = accountService.GetGroupList(true);
+                System.Console.WriteLine("Initialize QQ groups successfully.");
+            }
 
-            smartQQWarapper = accountService.GetQQProfile();
-            System.Console.WriteLine("Initialize QQ profile successfully.");  
+            if (MyQQEntity.DiscussionCount == 0)
+            {
+                smartQQWarapper.DiscussionAccounts = accountService.GetDiscussionGroupList(true);
+                System.Console.WriteLine("Initialize QQ discussions successfully.");
+            }
 
-            smartQQWarapper = accountService.GetQQProfile();
+            if (MyQQEntity.FriendAccount == 0)
+            {
+                smartQQWarapper.FriendAccounts = accountService.GetFriendList(true);
+                System.Console.WriteLine("Initialize QQ friends successfully.");
+            }
+
+            if (MyQQEntity.Name == "")
+            {
+                smartQQWarapper = accountService.GetQQProfile();
+                System.Console.WriteLine("Initialize QQ profile successfully.");
+            }
+
             smartQQWarapper.Online = true;
 
-            MyQQEntity.SmartQQ = smartQQWarapper;
-            CacheUtil.Update(clientId, MyQQEntity);
-
-            myQQDAL.InitializedSmartQQ(smartQQWarapper);
+            myQQDAL.InitializeSmartQQ(smartQQWarapper);
             System.Console.WriteLine("Initialize MyQQ context successfully.");
+                        
+            myQQDAL.InitializeMyQQEnity(MyQQEntity);
+            MyQQEntity.IsInitialized = false;
+            CacheUtil.Update(clientId, MyQQEntity);
         }
     }
 }

@@ -10,6 +10,10 @@ namespace MyQQ.Entity
     {
         public string ClientID { get; set; }
         public bool IsInitialized { get; set; }
-        public object SmartQQ { get; set; }
+        public string QQAccount { get; set; }
+        public string Name { get; set; }
+        public int FriendAccount { get; set; }
+        public int GroupCount { get; set; }
+        public int DiscussionCount { get; set; }
     }
 }
