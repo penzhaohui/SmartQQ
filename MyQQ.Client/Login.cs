@@ -32,26 +32,6 @@ namespace MyQQ.Client
             this.LoginStatusTimer.AutoReset = true; // 设置是执行一次（false）还是一直执行(true)；   
             this.LoginStatusTimer.Elapsed += new System.Timers.ElapsedEventHandler(CheckQRCodeStatus);// 到达时间的时候执行事件；
         }
-
-        private static string GetClientID()
-        {
-            String strSvcURI = "http://localhost:4788/" + "login/getclientid";
-
-            HttpClient client = new HttpClient();
-
-            HttpResponseMessage responseMsg = client.Get(strSvcURI);
-            responseMsg.EnsureStatusIsSuccessful();
-
-            String strJson = responseMsg.Content.ReadAsString();
-
-            ResponseWrapper<string> loginStatusResult = JsonConvert.DeserializeObject<ResponseWrapper<string>>(strJson);
-            if (loginStatusResult.ReturnCode == 1)
-            {
-                return loginStatusResult.Result;
-            }
-
-            return "";
-        }
         
         public void CheckQRCodeStatus(object source, System.Timers.ElapsedEventArgs e)
         {
@@ -70,7 +50,7 @@ namespace MyQQ.Client
 
             String strJson = responseMsg.Content.ReadAsString();
 
-            ResponseWrapper<LoginStatus> loginStatusResult = JsonConvert.DeserializeObject<ResponseWrapper<LoginStatus>>(strJson);
+            ResponseWrapper<LoginEntity> loginStatusResult = JsonConvert.DeserializeObject<ResponseWrapper<LoginEntity>>(strJson);
             if (loginStatusResult.ReturnCode == 1)
             {
                 // Pause the timer
@@ -113,9 +93,50 @@ namespace MyQQ.Client
             if (!String.IsNullOrEmpty(ClientID))
             {
                 this.Hide();
-                MainForm mainForm = new MainForm();               
+                string qqAccount = GetQQAccount();
+                MainForm mainForm = new MainForm(ClientID, qqAccount);               
                 mainForm.Show();
             }
+        }
+
+        private static string GetClientID()
+        {
+            String strSvcURI = "http://localhost:4788/" + "login/getclientid";
+
+            HttpClient client = new HttpClient();
+
+            HttpResponseMessage responseMsg = client.Get(strSvcURI);
+            responseMsg.EnsureStatusIsSuccessful();
+
+            String strJson = responseMsg.Content.ReadAsString();
+
+            ResponseWrapper<string> loginStatusResult = JsonConvert.DeserializeObject<ResponseWrapper<string>>(strJson);
+            if (loginStatusResult.ReturnCode == 1)
+            {
+                return loginStatusResult.Result;
+            }
+
+            return "";
+        }
+
+        private string GetQQAccount()
+        {
+            String strSvcURI = "http://localhost:4788/" + "account/getaccount/" + ClientID;
+
+            HttpClient client = new HttpClient();
+
+            HttpResponseMessage responseMsg = client.Get(strSvcURI);
+            responseMsg.EnsureStatusIsSuccessful();
+
+            String strJson = responseMsg.Content.ReadAsString();
+
+            ResponseWrapper<string> getQQAccountResult = JsonConvert.DeserializeObject<ResponseWrapper<string>>(strJson);
+            if (getQQAccountResult.ReturnCode == 1)
+            {
+                return getQQAccountResult.Result;
+            }
+
+            return "";
         }
     }
 }

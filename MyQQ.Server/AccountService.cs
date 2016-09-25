@@ -25,7 +25,7 @@ namespace MyQQ
 
         [OperationContract]
         [WebGet(UriTemplate = "/getaccount/{clientId}", ResponseFormat = WebMessageFormat.Json)]
-        public ResponseWrapper<string> GetFriendList(string clientId)
+        public ResponseWrapper<string> GetAccount(string clientId)
         {
             ResponseWrapper<string> response = new ResponseWrapper<string>();
 
@@ -40,8 +40,6 @@ namespace MyQQ
             }
 
             var MyQQEntity = (MyQQEntity)CacheUtil.Get(clientId);
-
-            List<FriendEntity> friends = myQQDAL.GetFrisendsByQQAccount(MyQQEntity.QQAccount);
 
             response.ReturnCode = 1;
             response.Message = "";
