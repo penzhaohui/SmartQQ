@@ -150,19 +150,20 @@ namespace MyQQ
             
             SmartQQ.AccountService accountService = new SmartQQ.AccountService(smartQQWarapper);
 
-            smartQQWarapper.GroupAccounts = accountService.GetGroupList(true);
-            System.Console.WriteLine("Initialize QQ groups successfully.");
-                        
-            smartQQWarapper = accountService.GetQQProfile();
-            System.Console.WriteLine("Initialize QQ profile successfully.");
-
-            smartQQWarapper.Friends = accountService.GetFriendList(true);
+            smartQQWarapper.FriendAccounts = accountService.GetFriendList(true);
             System.Console.WriteLine("Initialize QQ friends successfully.");
 
+            smartQQWarapper.GroupAccounts = accountService.GetGroupList(true);
+            System.Console.WriteLine("Initialize QQ groups successfully.");            
+
             smartQQWarapper.DiscussionAccounts = accountService.GetDiscussionGroupList(true);
-            System.Console.WriteLine("Initialize QQ discussions successfully.");
+            System.Console.WriteLine("Initialize QQ discussions successfully.");            
 
             smartQQWarapper = accountService.GetQQProfile();
+            System.Console.WriteLine("Initialize QQ profile successfully.");  
+
+            smartQQWarapper = accountService.GetQQProfile();
+            smartQQWarapper.Online = true;
 
             MyQQEntity.SmartQQ = smartQQWarapper;
             CacheUtil.Update(clientId, MyQQEntity);

@@ -40,7 +40,6 @@ namespace SmartQQ.json
                 public List<Members> members;
                 public int face;
                 public string memo;
-                public string markname;
                 public int level;
 
                 public class Members

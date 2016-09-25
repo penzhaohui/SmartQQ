@@ -8,16 +8,18 @@ namespace SmartQQ.model
 {
     public class GroupAccount
     {
-        public string flag;
-        public string gid;
-        public string code;
-        public string name;
-        public string createtime;
-        public string owner;        
-        public int face;
-        public string memo;
-        public string markname;
-        public int level;
-        public List<GroupMember> members;
+        public string Gid { get; set; }
+        public string Name { get; set; }
+        public string Class { get; set; }
+        public string Code { get; set; }
+        public string CreateTime { get; set; }
+        public string FingerMemo { get; set; }
+        public string Memo { get; set; }
+        public string Flag { get; set; }
+        public int Level { get; set; }
+        public string Owner { get; set; }
+        public string MarkName { get; set; }
+
+        public List<GroupMember> Members { get; set; }
     }
 }

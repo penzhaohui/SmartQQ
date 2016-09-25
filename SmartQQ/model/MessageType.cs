@@ -8,9 +8,7 @@ namespace SmartQQ.model
 {
     public enum MessageType
     {
-        Kick = 0,
-        Normal = 1,
-        Group = 2,
-        Discussion = 3   
+        Send = 0,
+        Receive = 1 
     }
 }

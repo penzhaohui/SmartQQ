@@ -9,35 +9,38 @@ namespace SmartQQ.model
 {
     public class SmartQQWrapper
     {
-        public string QQNumber { get; set; }
+        public string UIN { get; set; }
+        public string Name { get; set; }
+        public string QQAccount { get; set; }
+        public bool Online { get; set; }
+
         public string PTWebQQ { get; set; }
         public string VFWebQQ { get; set; }
-        public string PSessionId { get; set; }
-        public string UIN { get; set; }
+        public string PSessionId { get; set; }       
         public string Hash { get; set; }
 
-        public int face;
-        public string occupation;
-        public string phone;
-        public int allow;
-        public string college;
-        public string uin;
-        public int constel;
-        public int blood;
-        public string homepage;
-        public int stat;
-        public string city;
-        public string personal;
-        public string nick;
-        public int shengxiao;
-        public string email;
-        public string province;
-        public string gender;
-        public string mobile;
-        public string country;
-        public int vip_info;        
+        public int FriendCount { get; set; }
+        public int GroupCount { get; set; }
+        public int DicussionCount { get; set; }
 
-        public List<QQAccount> Friends { get; set; }
+        public DateTime Birthday { get; set; }
+        public int Blood { get; set; }
+        public string City { get; set; }
+        public string College { get; set; }
+        public string Country { get; set; }
+        public string Email { get; set; }
+        public string Gender { get; set; }
+        public string Homepage { get; set; }
+        public string Lnick { get; set; }
+        public string Mobile { get; set; }
+        public string Nick { get; set; }
+        public string Occupation { get; set; }
+        public string Personal { get; set; }
+        public string Phone { get; set; }
+        public string Province { get; set; }
+        public int Shengxiao { get; set; }      
+
+        public List<QQFriendAccount> FriendAccounts { get; set; }
         public List<GroupAccount> GroupAccounts { get; set; }
         public List<DiscussionAccount> DiscussionAccounts { get; set; }
         public CookieContainer CookieContainer { get; set; }

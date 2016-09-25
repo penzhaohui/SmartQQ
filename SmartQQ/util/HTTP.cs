@@ -30,8 +30,6 @@ namespace SmartQQ.util
     {
         //网络通信相关
         public static CookieContainer cookies = new CookieContainer();
-        static CookieCollection CookieCollection = new CookieCollection();
-        static CookieContainer CookieContainer = new CookieContainer();
 
         /// <summary>
         /// 

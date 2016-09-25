@@ -8,8 +8,8 @@ namespace SmartQQ.model
 {
     public class DiscussionAccount
     {
-        public string did;
-        public string name;
-        public List<DiscussionMember> members;
+        public string Did { get; set; }
+        public string Name { get; set; }
+        public List<DiscussionMember> Members { get; set; }
     }
 }

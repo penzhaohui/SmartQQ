@@ -106,7 +106,7 @@ namespace SmartQQ
             smartQQ.PTWebQQ = ptwebqq;
             smartQQ.VFWebQQ = vfwebqq;
             smartQQ.PSessionId = psessionid;
-            smartQQ.QQNumber = qqNbr;
+            smartQQ.QQAccount = qqNbr;
             smartQQ.Hash = hash;
 
             return smartQQ;
