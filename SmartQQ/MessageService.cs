@@ -1,37 +1,311 @@
-﻿using SmartQQ.model;
+﻿using Newtonsoft.Json;
+using SmartQQ.json;
+using SmartQQ.model;
 using SmartQQ.util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace SmartQQ
 {
     public class MessageService
     {
         public delegate void ProcessMessageHandler(QQMessage message);
-        public delegate void SendMessageHandler(QQMessage message);
+        public delegate void SendMessageHandler(bool success);
 
-        private ProcessMessageHandler processMessageAction;
-        public MessageService(ProcessMessageHandler processMessageAction)
+        private SmartQQWrapper smartQQ = null;
+        private ProcessMessageHandler ProcessMessageAction;
+        private SendMessageHandler SendMessageAction;
+
+        public MessageService(SmartQQWrapper smartQQ)
         {
-            this.processMessageAction = processMessageAction;
-            Task.Run(() => RequestMessage());
+            this.smartQQ = smartQQ;
         }
 
-        private void RequestMessage()
+        private MessageStatus status = MessageStatus.Initialized;
+        public MessageStatus Status
         {
-            //try
-            //{
-            //    string url = "http://d1.web2.qq.com/channel/poll2";
-            //    string HeartPackdata = "{\"ptwebqq\":\"#{ptwebqq}\",\"clientid\":53999199,\"psessionid\":\"#{psessionid}\",\"key\":\"\"}";
-            //    HeartPackdata = HeartPackdata.Replace("#{ptwebqq}", ptwebqq).Replace("#{psessionid}", psessionid);
-            //    HeartPackdata = "r=" + HttpUtility.UrlEncode(HeartPackdata);
-            //    HTTP.Post_Async_Action action = Message_Get;
-            //    HTTP.Post_Async(url, HeartPackdata, action);
-            //}
-            //catch (Exception) { Message_Request(); }
+            get {
+                return status;
+            }
+        }
+
+        public void SwitchSmartQQ(SmartQQWrapper smartQQ)
+        {
+            this.smartQQ = smartQQ;
+        }        
+
+        public void ReceiveMessage(ProcessMessageHandler callbackFunc)
+        {
+            status += (int) MessageStatus.GetMessage;
+
+            this.ProcessMessageAction = callbackFunc;
+            Task.Run(() => PollMessage());
+        }
+
+        public void SendMessage(SendMessageHandler callbackFunc)
+        {
+            status += (int)MessageStatus.SendMessage;
+
+            this.SendMessageAction = callbackFunc;
+        }
+
+        #region Poll QQ Message
+
+        private void PollMessage()
+        {
+            try
+            {
+                string url = "http://d1.web2.qq.com/channel/poll2";
+                string packData = "{\"ptwebqq\":\"#{ptwebqq}\",\"clientid\":53999199,\"psessionid\":\"#{psessionid}\",\"key\":\"\"}";
+                packData = packData.Replace("#{ptwebqq}", smartQQ.PTWebQQ).Replace("#{psessionid}", smartQQ.PSessionId);
+                packData = "r=" + HttpUtility.UrlEncode(packData);
+                HTTP.Post_Async_Action action = ReceiveMessage;
+                HTTP.Post_Async(url, packData, action);
+            }
+            catch (Exception)
+            {
+                PollMessage();
+            }
+        }
+
+        private bool processMessageFlag = true;
+        private bool ProcessMessageFlag 
+        {
+            get {
+                return processMessageFlag;
+            }
+            set {
+                processMessageFlag = value;
+
+                if (value == true)
+                {
+                    if (status != MessageStatus.GetMessage)
+                    {
+                        status += (int)MessageStatus.GetMessage;
+                    }
+                }
+            }
+        }
+
+        private void ReceiveMessage(string data)
+        {
+            Task.Run(() => PollMessage());
+            if (ProcessMessageFlag)
+            {
+                ProcessMessage(data);
+            }
+        }
+
+        private void ProcessMessage(string data)
+        {
+            Message poll = (Message)JsonConvert.DeserializeObject(data, typeof(Message));
+            if (poll.retcode != 0)
+            {
+                ProcessMessageError(poll);
+            }
+            else if (poll.result != null && poll.result.Count > 0)
+            {
+                QQMessage message = new QQMessage();
+
+                for (int i = 0; i < poll.result.Count; i++)
+                {
+                    switch (poll.result[i].poll_type)
+                    {
+                        case "kick_message":
+                            ProcessMessageFlag = false;
+                            //MessageBox.Show(poll.result[i].value.reason);
+                            break;
+                        case "message":
+                            ProcessPrivateMessage(poll.result[i].value);
+                            break;
+                        case "group_message":
+                            ProcessGroupMessage(poll.result[i].value);
+                            break;
+                        case "discu_message":
+                            ProcessDisscussMessage(poll.result[i].value);
+                            break;
+                        default:                            
+                            break;
+                    }
+                }
+
+                if (ProcessMessageAction == null)
+                {
+                    ProcessMessageAction(message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 私聊消息处理
+        /// </summary>
+        /// <param name="value">poll包中的value</param>
+        private void ProcessPrivateMessage(Message.Result.Value value)
+        {
+            string message = GetMessageText(value.content);
+        }
+
+        /// <summary>
+        /// 群聊消息处理
+        /// </summary>
+        /// <param name="value">poll包中的value</param>
+        private void ProcessGroupMessage(Message.Result.Value value)
+        {
+            string message = GetMessageText(value.content);
+        }
+
+        /// <summary>
+        /// 讨论组消息处理
+        /// </summary>
+        /// <param name="value">poll包中的value</param>
+        private void ProcessDisscussMessage(Message.Result.Value value)
+        {
+            string message = GetMessageText(value.content);     
+        }
+
+        /// <summary>
+        /// 错误信息处理
+        /// </summary>
+        /// <param name="poll">poll包</param>
+        private int Count103 = 0;
+        private void ProcessMessageError(Message poll)
+        {
+            int TempCount103 = Count103;
+            Count103 = 0;
+            if (poll.retcode == 102)
+            {
+                return;
+            }
+            else if (poll.retcode == 103)
+            {
+                Count103 = TempCount103 + 1;
+                if (Count103 > 20)
+                {
+                    ProcessMessageFlag = false;
+                }
+
+                return;
+            }
+            else if (poll.retcode == 116)
+            {
+                //ptwebqq = poll.p;
+                return;
+            }
+            else if (poll.retcode == 108 || poll.retcode == 114)
+            {
+                ProcessMessageFlag = false;
+                return;
+            }
+            else if (poll.retcode == 120 || poll.retcode == 121)
+            {
+                ProcessMessageFlag = false;
+                return;
+            }
+            else if (poll.retcode == 100006 || poll.retcode == 100003)
+            {
+                ProcessMessageFlag = false;
+                return;
+            }
+        }
+
+        /// <summary>
+        /// 处理poll包中的消息数组
+        /// </summary>
+        /// <param name="content">消息数组</param>
+        /// <returns></returns>
+        private string GetMessageText(List<object> content)
+        {
+            string message = "";
+            for (int i = 1; i < content.Count; i++)
+            {
+                if (content[i].ToString().Contains("[\"cface\","))
+                {
+                    continue;
+                }
+                else if (content[i].ToString().Contains("\"face\","))
+                {
+                    message += ("{..[face" + content[i].ToString().Replace("\"face\",", "").Replace("]", "").Replace("[", "").Replace(" ", "").Replace("\r", "").Replace("\n", "") + "]..}");
+                }
+                else
+                {
+                    message += content[i].ToString();
+                }
+            }
+
+            message = message.Replace("\\\\n", Environment.NewLine).Replace("＆", "&");
+
+            return message;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        /// <param name="type">接受者类型：0，用户；1，群；2，讨论组</param>
+        /// <param name="id">用户：uid；群：qid；讨论组：did</param>
+        /// <param name="messageToSend">要发送的消息</param>
+        /// <returns></returns>
+        private bool SendMessage(int type, string id, string messageToSend)
+        {
+            if (messageToSend.Equals("") || id.Equals(""))
+            {
+                return false;
+            }
+
+            string[] tmp = messageToSend.Split("{}".ToCharArray());
+            messageToSend = "";
+            for (int i = 0; i < tmp.Length; i++)
+            {
+                if (!tmp[i].Trim().StartsWith("..[face") || !tmp[i].Trim().EndsWith("].."))
+                {
+                    messageToSend += "\\\"" + tmp[i] + "\\\",";
+                }
+                else
+                {
+                    messageToSend += tmp[i].Replace("..[face", "[\\\"face\\\",").Replace("]..", "],");
+                }
+            }
+
+            messageToSend = messageToSend.Remove(messageToSend.LastIndexOf(','));
+            messageToSend = messageToSend.Replace("\r\n", "\n").Replace("\n\r", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine);
+
+            try
+            {
+                string to_groupuin_did, url;
+                switch (type)
+                {
+                    case 0:
+                        to_groupuin_did = "to";
+                        url = "http://d1.web2.qq.com/channel/send_buddy_msg2";
+                        break;
+                    case 1:
+                        to_groupuin_did = "group_uin";
+                        url = "http://d1.web2.qq.com/channel/send_qun_msg2";
+                        break;
+                    case 2:
+                        to_groupuin_did = "did";
+                        url = "http://d1.web2.qq.com/channel/send_discu_msg2";
+                        break;
+                    default:
+                        return false;
+                }
+
+                string postData = "{\"#{type}\":#{id},\"content\":\"[#{msg},[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":#{face},\"clientid\":53999199,\"msg_id\":#{msg_id},\"psessionid\":\"#{psessionid}\"}";
+                //postData = "r=" + HttpUtility.UrlEncode(postData.Replace("#{type}", to_groupuin_did).Replace("#{id}", id).Replace("#{msg}", messageToSend).Replace("#{face}", SelfInfo.face.ToString()).Replace("#{msg_id}", rand.Next(10000000, 99999999).ToString()).Replace("#{psessionid}", psessionid));
+
+                string dat = HTTP.Post(url, postData, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+
+                return dat.Equals("{\"errCode\":0,\"msg\":\"send ok\"}");
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

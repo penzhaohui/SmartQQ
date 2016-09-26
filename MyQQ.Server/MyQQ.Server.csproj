@@ -79,6 +79,7 @@
     <Compile Include="MessageService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\CacheUtil.cs" />
+    <Compile Include="Util\MyQQRobot.cs" />
     <Compile Include="Util\MyQQDAL.cs" />
     <Compile Include="Util\SQLiteHelper.cs" />
     <Compile Include="Util\TokenUtil.cs" />

@@ -53,6 +53,7 @@
     <Compile Include="json\Friends.cs" />
     <Compile Include="json\GroupInfo.cs" />
     <Compile Include="json\Groups.cs" />
+    <Compile Include="json\Message.cs" />
     <Compile Include="json\OnlineFirends.cs" />
     <Compile Include="LoginService.cs" />
     <Compile Include="MessageService.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="model\DiscussionMember.cs" />
     <Compile Include="model\GroupAccount.cs" />
     <Compile Include="model\GroupMember.cs" />
+    <Compile Include="model\MessageStatus.cs" />
     <Compile Include="model\MessageType.cs" />
     <Compile Include="model\QQFriendAccount.cs" />
     <Compile Include="model\QQMessage.cs" />

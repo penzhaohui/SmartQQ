@@ -185,6 +185,8 @@ namespace MyQQ
             myQQDAL.InitializeMyQQEnity(MyQQEntity);
             MyQQEntity.IsInitialized = false;
             CacheUtil.Update(clientId, MyQQEntity);
+
+            MyQQRobot.LaunchMyQQRobot(smartQQWarapper);
         }
     }
 }
