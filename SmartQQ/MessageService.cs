@@ -174,6 +174,12 @@ namespace SmartQQ
         private int Count103 = 0;
         private void ProcessMessageError(Message poll)
         {
+            /*
+               http://blog.csdn.net/mingzznet/article/details/9879977
+               返回103、121，代表连接不成功，需要重新登录；
+               返回102，代表连接正常，此时服务器暂无信息；
+               返回0，代表服务器有信息传递过来：包括群信、群成员给你的发信，QQ好友给你的发信。
+             */
             int TempCount103 = Count103;
             Count103 = 0;
             if (poll.retcode == 102)

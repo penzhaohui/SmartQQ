@@ -37,7 +37,7 @@ namespace MyQQ
 
             MyQQEntity myQQEntity = new MyQQEntity();            
             myQQEntity.ClientID = clientId;
-            myQQEntity.IsInitialized = false;
+            myQQEntity.Online = MyQQEntity.OnlineStatus.None;
 
             CacheUtil.Add(clientId, myQQEntity);
 
@@ -57,6 +57,11 @@ namespace MyQQ
             {
                 return null;
             }
+
+            MyQQEntity myQQEntity = new MyQQEntity();
+            myQQEntity.IsInitialized = false;
+            myQQEntity.Online = MyQQEntity.OnlineStatus.None;
+            CacheUtil.Update(clientId, myQQEntity);
 
             return loginService.GetQRCodeStream();
         }
@@ -78,6 +83,29 @@ namespace MyQQ
             }
 
             LoginEntity loginEntity = new LoginEntity();
+
+            var MyQQEntity = (MyQQEntity)CacheUtil.Get(clientId);
+            if (MyQQEntity.Online == Entity.MyQQEntity.OnlineStatus.Processing)
+            {
+                response.ReturnCode = 0;
+                response.Message = "";
+                response.InnerMessage = "还在确认";
+
+                return response;
+            }
+
+            if (MyQQEntity.Online == Entity.MyQQEntity.OnlineStatus.Logined)
+            {
+                response.ReturnCode = 1;
+                response.Message = "";
+                response.InnerMessage = "已经确认";
+
+                return response;
+            }
+
+            MyQQEntity.Online = Entity.MyQQEntity.OnlineStatus.Processing;
+            CacheUtil.Update(clientId, MyQQEntity);
+
             var result = loginService.CheckQRCodeStatus();
 
             if (result == null)
@@ -95,6 +123,8 @@ namespace MyQQ
            
             response.Result = loginEntity;
 
+            MyQQEntity.Online = Entity.MyQQEntity.OnlineStatus.Processing;
+            
             switch (result.StatusCode)
             { 
                 case "65":
@@ -116,11 +146,12 @@ namespace MyQQ
                     response.ReturnCode = 1;
                     response.Message = "";
                     response.InnerMessage = "已经确认";
-
                     ProcessLoginRequest(clientId, result.RedirectUrl);
-
+                    MyQQEntity.Online = Entity.MyQQEntity.OnlineStatus.Logined;
                     break;
             }
+
+            CacheUtil.Update(clientId, MyQQEntity);
 
             return response;
         }

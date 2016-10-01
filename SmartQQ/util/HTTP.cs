@@ -30,7 +30,6 @@ namespace SmartQQ.util
     {
         //网络通信相关
         public static CookieContainer cookies = new CookieContainer();
-        public static Uri Uri = new Uri("http://s.web2.qq.com/api/");
 
         /// <summary>
         /// 
@@ -59,8 +58,7 @@ namespace SmartQQ.util
                 req.UserAgent = "Mozilla/5.0 (Windows NT 10.0;%20WOW64; rv:47.0) Gecko/20100101 Firefox/47.0";
                 res = (HttpWebResponse)req.GetResponse();
 
-                cookies.Add(res.Cookies);
-                System.Console.WriteLine("The cookie header: " + cookies.GetCookieHeader(Uri));                
+                cookies.Add(res.Cookies);              
             }
             //catch (HttpException)
             //{
@@ -107,7 +105,6 @@ namespace SmartQQ.util
                 HttpWebResponse res = req.GetResponse() as HttpWebResponse;                                        
                 
                 cookies.Add(res.Cookies);
-                System.Console.Out.WriteLine("The cookie header: " + cookies.GetCookieHeader(Uri));
 
                 stream.Close();
 
