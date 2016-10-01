@@ -102,12 +102,8 @@ namespace MyQQ
 
                 return response;
             }
-
-            MyQQEntity.Online = Entity.MyQQEntity.OnlineStatus.Processing;
-            CacheUtil.Update(clientId, MyQQEntity);
-
-            var result = loginService.CheckQRCodeStatus();
-
+                        
+            var result = loginService.CheckQRCodeStatus();            
             if (result == null)
             {
                 response.ReturnCode = 0;
@@ -115,15 +111,18 @@ namespace MyQQ
                 response.InnerMessage = "You might forget to scan QR code first.";
                 response.Result = null;
 
+                MyQQEntity.Online = Entity.MyQQEntity.OnlineStatus.None;
+                CacheUtil.Update(clientId, MyQQEntity);
+
                 return response;
             }
 
-            loginEntity.StatusCode = result.StatusCode;
-            loginEntity.StatusText = result.StatusText;
-           
-            response.Result = loginEntity;
-
             MyQQEntity.Online = Entity.MyQQEntity.OnlineStatus.Processing;
+            CacheUtil.Update(clientId, MyQQEntity);
+
+            loginEntity.StatusCode = result.StatusCode;
+            loginEntity.StatusText = result.StatusText;           
+            response.Result = loginEntity;
             
             switch (result.StatusCode)
             { 
@@ -131,16 +130,19 @@ namespace MyQQ
                     response.ReturnCode = 0;
                     response.Message = "Login Failed";
                     response.InnerMessage = "二维码失效";
+                    MyQQEntity.Online = Entity.MyQQEntity.OnlineStatus.None;
                     break;
                 case "66":
                     response.ReturnCode = 0;
                     response.Message = "Login Failed";
                     response.InnerMessage = "等待扫描";
+                    MyQQEntity.Online = Entity.MyQQEntity.OnlineStatus.None;
                     break;
                 case "67":
                     response.ReturnCode = 0;
                     response.Message = "Login Failed";
                     response.InnerMessage = "等待确认";
+                    MyQQEntity.Online = Entity.MyQQEntity.OnlineStatus.None;
                     break;
                 case "0":
                     response.ReturnCode = 1;
@@ -182,7 +184,7 @@ namespace MyQQ
             SmartQQ.AccountService accountService = new SmartQQ.AccountService(smartQQWarapper);
 
             MyQQEntity.QQAccount = smartQQWarapper.QQAccount;
-            myQQDAL.InitializeMyQQEnity(MyQQEntity);
+            bool forceInit = !myQQDAL.InitializeMyQQEnity(MyQQEntity);
 
             if (MyQQEntity.GroupCount == 0)
             {
@@ -202,18 +204,18 @@ namespace MyQQ
                 System.Console.WriteLine("Initialize QQ friends successfully.");
             }
 
-            if (MyQQEntity.Name == "")
+            smartQQWarapper.Online = true;
+            if (MyQQEntity.Name == null && MyQQEntity.Name == "")
             {
                 smartQQWarapper = accountService.GetQQProfile();
                 System.Console.WriteLine("Initialize QQ profile successfully.");
             }
 
-            smartQQWarapper.Online = true;
-
             myQQDAL.InitializeSmartQQ(smartQQWarapper);
             System.Console.WriteLine("Initialize MyQQ context successfully.");
-                        
-            myQQDAL.InitializeMyQQEnity(MyQQEntity);
+
+            myQQDAL.InitializeMyQQEnity(MyQQEntity, forceInit);                      
+            
             MyQQEntity.IsInitialized = false;
             CacheUtil.Update(clientId, MyQQEntity);
 

@@ -109,7 +109,7 @@ namespace SmartQQ
             }
             else if (poll.result != null && poll.result.Count > 0)
             {
-                QQMessage message = new QQMessage();
+                QQMessage message = new QQMessage();                
 
                 for (int i = 0; i < poll.result.Count; i++)
                 {
@@ -120,21 +120,22 @@ namespace SmartQQ
                             //MessageBox.Show(poll.result[i].value.reason);
                             break;
                         case "message":
-                            ProcessPrivateMessage(poll.result[i].value);
+                            message = ProcessPrivateMessage(poll.result[i].value);
                             break;
                         case "group_message":
-                            ProcessGroupMessage(poll.result[i].value);
+                            message = ProcessGroupMessage(poll.result[i].value);
                             break;
                         case "discu_message":
-                            ProcessDisscussMessage(poll.result[i].value);
+                            message = ProcessDisscussMessage(poll.result[i].value);
                             break;
                         default:                            
                             break;
                     }
                 }
 
-                if (ProcessMessageAction == null)
+                if (ProcessMessageAction != null)
                 {
+                    message.QQAccount = this.smartQQ.QQAccount;
                     ProcessMessageAction(message);
                 }
             }
@@ -144,27 +145,48 @@ namespace SmartQQ
         /// 私聊消息处理
         /// </summary>
         /// <param name="value">poll包中的value</param>
-        private void ProcessPrivateMessage(Message.Result.Value value)
+        private QQMessage ProcessPrivateMessage(Message.Result.Value value)
         {
-            string message = GetMessageText(value.content);
+            QQMessage message = new QQMessage();
+
+            message.AccountType = AccountType.Private;
+            message.FriendID = value.from_uin;
+            message.MessageType = MessageType.Receive;
+            message.MessageContent = GetMessageText(value.content);
+
+            return message;
         }
 
         /// <summary>
         /// 群聊消息处理
         /// </summary>
         /// <param name="value">poll包中的value</param>
-        private void ProcessGroupMessage(Message.Result.Value value)
+        private QQMessage ProcessGroupMessage(Message.Result.Value value)
         {
-            string message = GetMessageText(value.content);
+            QQMessage message = new QQMessage();
+            message.AccountType = AccountType.Group;
+            message.GroupID = value.group_code;
+            message.FriendID = value.send_uin;
+            message.MessageType = MessageType.Receive;
+            message.MessageContent = GetMessageText(value.content);
+
+            return message;
         }
 
         /// <summary>
         /// 讨论组消息处理
         /// </summary>
         /// <param name="value">poll包中的value</param>
-        private void ProcessDisscussMessage(Message.Result.Value value)
+        private QQMessage ProcessDisscussMessage(Message.Result.Value value)
         {
-            string message = GetMessageText(value.content);     
+            QQMessage message = new QQMessage();
+            message.AccountType = AccountType.Discussion;
+            message.DiscussionID = value.did;
+            message.FriendID = value.send_uin;
+            message.MessageType = MessageType.Receive;
+            message.MessageContent = GetMessageText(value.content);
+
+            return message;
         }
 
         /// <summary>

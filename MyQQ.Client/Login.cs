@@ -30,7 +30,7 @@ namespace MyQQ.Client
             
             this.LoginStatusTimer.Enabled = true; // 是否执行System.Timers.Timer.Elapsed事件；
             this.LoginStatusTimer.AutoReset = true; // 设置是执行一次（false）还是一直执行(true)；   
-            this.LoginStatusTimer.Interval = 10000;
+            //this.LoginStatusTimer.Interval = 10000;
             this.LoginStatusTimer.Elapsed += new System.Timers.ElapsedEventHandler(CheckQRCodeStatus);// 到达时间的时候执行事件；
         }
         

@@ -79,15 +79,130 @@ namespace MyQQ.Util
             return true;
         }
 
+        private bool RemoveAllAccounts(string qqAccount)
+        {
+            #region 1. Remove Friends
+
+            // 1. Remove friends
+            string sqlDeleteQQFriends = "DELETE FROM QQFriends WHERE QQAccount = @QQAccount ";
+            SQLiteParameter[] paraDeleteQQFriends = new SQLiteParameter[1];
+            paraDeleteQQFriends[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+
+            try
+            {
+                sqlHelper.ExecuteNonQuery(sqlDeleteQQFriends, CommandType.Text, paraDeleteQQFriends);
+            }
+            catch
+            {
+                return false;
+            }
+
+            #endregion
+
+            #region 2. Remove Groups
+            // 2. Remove Groups
+            string sqlDeleteQQGroupMembers = "DELETE FROM QQGroupMember WHERE Gid IN (SELECT Gid FROM QQGroupAccount WHERE QQAccount = @QQAccount) ";
+            SQLiteParameter[] paraDeleteQQGroupMembers = new SQLiteParameter[1];
+            paraDeleteQQGroupMembers[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+
+            try
+            {
+                sqlHelper.ExecuteNonQuery(sqlDeleteQQGroupMembers, CommandType.Text, paraDeleteQQGroupMembers);
+            }
+            catch
+            {
+                return false;
+            }
+
+            string sqlDeleteQQGroups = "DELETE FROM QQGroupAccount WHERE QQAccount = @QQAccount ";
+            SQLiteParameter[] paraDeleteQQGroups = new SQLiteParameter[1];
+            paraDeleteQQGroups[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+
+            try
+            {
+                sqlHelper.ExecuteNonQuery(sqlDeleteQQGroups, CommandType.Text, paraDeleteQQGroups);
+            }
+            catch
+            {
+                return false;
+            }
+
+            #endregion
+
+            #region 3. Remove Dicussion
+            // 3. Remove Dicussion
+            string sqlDeleteQQDiscussionMembers = "DELETE FROM QQDiscussionMember WHERE Did IN (SELECT Did FROM QQDiscussionAccount WHERE QQAccount = @QQAccount) ";
+            SQLiteParameter[] paraDeleteQQDiscussionMembers = new SQLiteParameter[1];
+            paraDeleteQQDiscussionMembers[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+
+            try
+            {
+                sqlHelper.ExecuteNonQuery(sqlDeleteQQDiscussionMembers, CommandType.Text, paraDeleteQQDiscussionMembers);
+            }
+            catch
+            {
+                return false;
+            }
+
+            string sqlDeleteQQDiscussions = "DELETE FROM QQDiscussionAccount WHERE QQAccount = @QQAccount ";
+            SQLiteParameter[] paraDeleteQQDiscussions = new SQLiteParameter[1];
+            paraDeleteQQDiscussions[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+
+            try
+            {
+                sqlHelper.ExecuteNonQuery(sqlDeleteQQDiscussions, CommandType.Text, paraDeleteQQDiscussions);
+            }
+            catch
+            {
+                return false;
+            }
+
+            #endregion
+
+            #region 4. Remove profile
+            // 4. Remove profile
+            string sqlDeleteQQAccountProfile = "DELETE FROM QQAccountProfile WHERE QQAccount = @QQAccount ";
+            SQLiteParameter[] paraDeleteQQAccountProfile = new SQLiteParameter[1];
+            paraDeleteQQAccountProfile[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+
+            try
+            {
+                sqlHelper.ExecuteNonQuery(sqlDeleteQQAccountProfile, CommandType.Text, paraDeleteQQAccountProfile);
+            }
+            catch
+            {
+                return false;
+            }
+
+            string sqlDeleteQQAccount = "DELETE FROM QQAccount WHERE Account = @Account ";
+            SQLiteParameter[] paraDeleteQQAccount = new SQLiteParameter[1];
+            paraDeleteQQAccount[0] = sqlHelper.InitSQLiteParameter("@Account", ParameterDirection.Input, qqAccount);
+
+            try
+            {
+                sqlHelper.ExecuteNonQuery(sqlDeleteQQAccount, CommandType.Text, paraDeleteQQAccount);
+            }
+            catch
+            {
+                return false;
+            }
+
+            #endregion
+
+            return true;
+        }
+
         /// <summary>
         /// Initialize MyQQ Entity
         /// </summary>
         /// <param name="myQQEntity"></param>
-        public void InitializeMyQQEnity(MyQQEntity myQQEntity)
+        public bool InitializeMyQQEnity(MyQQEntity myQQEntity, bool forceInit = false)
         {
             # region From QQAccount
 
-            String strSql = "SELECT Name, FriendAccount, GroupCount, DiscussionCount FROM  QQAccount WHERE Account = @Account ";
+            DateTime lastUpdateTime = DateTime.Now;
+
+            String strSql = "SELECT Name, FriendAccount, GroupCount, DiscussionCount, LastUpdateTime FROM  QQAccount WHERE Account = @Account ";
 
             SQLiteParameter[] paraArray = new SQLiteParameter[1];
 
@@ -97,11 +212,21 @@ namespace MyQQ.Util
             {
                 if (sqlDr.Read())
                 {
-                    myQQEntity.Name = sqlDr.IsDBNull(0) == true ? String.Empty : sqlDr.GetString(0);
-                    myQQEntity.FriendAccount= sqlDr.GetInt32(1);
-                    myQQEntity.GroupCount = sqlDr.GetInt32(2);
-                    myQQEntity.DiscussionCount = sqlDr.GetInt32(3);
+                    lastUpdateTime = sqlDr.IsDBNull(0) == true ? DateTime.Now : sqlDr.GetDateTime(4);
+                    if (forceInit || DateTime.Now.Subtract(lastUpdateTime).TotalHours < 1)
+                    {
+                        myQQEntity.Name = sqlDr.IsDBNull(0) == true ? String.Empty : sqlDr.GetString(0);
+                        myQQEntity.FriendAccount = sqlDr.GetInt32(1);
+                        myQQEntity.GroupCount = sqlDr.GetInt32(2);
+                        myQQEntity.DiscussionCount = sqlDr.GetInt32(3);
+                    }
                 }
+            }            
+
+            if (forceInit == false && DateTime.Now.Subtract(lastUpdateTime).TotalHours > 1)
+            {
+                RemoveAllAccounts(myQQEntity.QQAccount); 
+                return false;
             }
 
             #endregion
@@ -144,7 +269,7 @@ namespace MyQQ.Util
 
             #region From QQFirends
 
-            String strSql3 = "SELECT COUNT(*) FROM  QQFirends WHERE QQAccount = @QQAccount ";
+            String strSql3 = "SELECT COUNT(*) FROM  QQFriends WHERE QQAccount = @QQAccount ";
 
             SQLiteParameter[] paraArray3 = new SQLiteParameter[1];
 
@@ -159,6 +284,8 @@ namespace MyQQ.Util
             }
 
             #endregion
+
+            return true;
         }
 
         /// <summary>
@@ -386,7 +513,7 @@ namespace MyQQ.Util
 
         private bool addQQFriendAccount(string qqaccount, QQFriendAccount account)
         {
-            string sqlInsertQQAccount = @"INSERT INTO QQFirends (Uin, Account, QQAccount, Brithday, Blood, City, College, Country, Email,
+            string sqlInsertQQAccount = @"INSERT INTO QQFriends (Uin, Account, QQAccount, Brithday, Blood, City, College, Country, Email,
                                                                  Gender, Homepage, Mobile, Nick, Occupation, Personal, Phone, Province) 
                                            VALUES (@Uin, @Account, @QQAccount, @Brithday, @Blood, @City, @College, @Country, @Email,
                                                                  @Gender, @Homepage, @Mobile, @Nick, @Occupation, @Personal, @Phone, @Province)";
@@ -654,7 +781,7 @@ namespace MyQQ.Util
         /// <returns></returns>
         public List<FriendEntity> GetFrisendsByQQAccount(string qqaccount)
         {
-            string getFriendsByQQAccount = "SELECT Account, Nick FROM QQFirends WHERE QQAccount = @QQAccount ";
+            string getFriendsByQQAccount = "SELECT Account, Nick FROM QQFriends WHERE QQAccount = @QQAccount ";
 
             List<FriendEntity> friends = new List<FriendEntity>();
             SQLiteParameter[] paraArray = new SQLiteParameter[1];
@@ -793,5 +920,79 @@ namespace MyQQ.Util
         }
 
         #endregion
+
+        public bool AddOneMessage(string qqAccount, QQMessage message)
+        {
+            // 1. Do some initialization
+            string accountType = message.AccountType.ToString();
+            string friendId = message.FriendID;
+            string groupId = message.GroupID;
+            string discussionId = message.DiscussionID;
+            string messageType = message.MessageType.ToString();
+            string content = message.MessageContent;
+            string ownerAccount = "";
+            string ownerName = "";
+
+            // 2. Get Message Owner's account and name
+            string sqlGetMessageOwner = "";
+            SQLiteParameter[] paraGetMessageArray = null;
+            switch (message.AccountType)
+            {
+                case AccountType.Private:
+                    sqlGetMessageOwner = "SELECT Account, Nick FROM QQFriends WHERE QQAccount = @QQAccount AND Uin = @Uin ";
+                    paraGetMessageArray = new SQLiteParameter[2];
+                    paraGetMessageArray[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+                    paraGetMessageArray[1] = sqlHelper.InitSQLiteParameter("@Uin", ParameterDirection.Input, friendId);
+                    break;
+                case AccountType.Group:
+                    sqlGetMessageOwner = "SELECT Account, Nick FROM QQGroupMember WHERE Gid = @Gid AND Uin = @Uin ";
+                    paraGetMessageArray = new SQLiteParameter[2];
+                    paraGetMessageArray[0] = sqlHelper.InitSQLiteParameter("@Gid", ParameterDirection.Input, groupId);
+                    paraGetMessageArray[1] = sqlHelper.InitSQLiteParameter("@Uin", ParameterDirection.Input, friendId);
+                    break;
+                case AccountType.Discussion:
+                    sqlGetMessageOwner = "SELECT RUin, Name FROM QQDiscussionMember WHERE Did = @Did AND Uin = @Uin ";
+                    paraGetMessageArray = new SQLiteParameter[2];
+                    paraGetMessageArray[0] = sqlHelper.InitSQLiteParameter("@Did", ParameterDirection.Input, discussionId);
+                    paraGetMessageArray[1] = sqlHelper.InitSQLiteParameter("@Uin", ParameterDirection.Input, friendId);
+                    break;
+            }
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(sqlGetMessageOwner, CommandType.Text, paraGetMessageArray))
+            {
+                while (sqlDr.Read())
+                {
+                    ownerAccount = sqlDr.IsDBNull(0) == true ? String.Empty : sqlDr.GetString(0);
+                    ownerName = sqlDr.IsDBNull(1) == true ? String.Empty : sqlDr.GetString(1);
+                    break;
+                }
+            }
+
+            // 3. Insert the message into database
+            string sqlInsertQQMessage = @"INSERT INTO QQMessage ( CreateTime, QQAccount, AccountType, QQFriendID, QQGroupID, QQDicussionID, MessageType, 
+                                                                  MessageContent, MessageOwnerAccount, MessageOwnerName)
+                                                 VALUES (@CreateTime, @QQAccount, @AccountType, @QQFriendID, @QQGroupID, @QQDicussionID, @MessageType, 
+                                                         @MessageContent, @MessageOwnerAccount, @MessageOwnerName)";
+
+            SQLiteParameter[] paraArray = new SQLiteParameter[10];
+
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@CreateTime", ParameterDirection.Input, DateTime.Now);
+            paraArray[1] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+            paraArray[2] = sqlHelper.InitSQLiteParameter("@AccountType", ParameterDirection.Input, accountType);
+            paraArray[3] = sqlHelper.InitSQLiteParameter("@QQFriendID", ParameterDirection.Input, friendId);
+            paraArray[4] = sqlHelper.InitSQLiteParameter("@QQGroupID", ParameterDirection.Input, groupId);
+            paraArray[5] = sqlHelper.InitSQLiteParameter("@QQDicussionID", ParameterDirection.Input, discussionId);
+            paraArray[6] = sqlHelper.InitSQLiteParameter("@MessageType", ParameterDirection.Input, messageType);
+            paraArray[7] = sqlHelper.InitSQLiteParameter("@MessageContent", ParameterDirection.Input, content);
+            paraArray[8] = sqlHelper.InitSQLiteParameter("@MessageOwnerAccount", ParameterDirection.Input, ownerAccount);
+            paraArray[9] = sqlHelper.InitSQLiteParameter("@MessageOwnerName", ParameterDirection.Input, ownerName);
+
+            if (sqlHelper.ExecuteNonQuery(sqlInsertQQMessage, CommandType.Text, paraArray) > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

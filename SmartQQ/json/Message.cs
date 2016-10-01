@@ -23,21 +23,22 @@ namespace SmartQQ.json
                 //收到消息
                 public List<object> content;
                 public string from_uin;
-                public string time;
                 //群消息有send_uin，为特征群号；info_seq为群号
                 public string send_uin;
-                //public string info_seq;              
-                //上线提示
-                //public string uin;
-                //public string status;
+                public string to_uin;
+                public string msg_id;
+                public string msg_type;
+                public string time;
+                //讨论组
+                public string did;
+                //
+                public string group_code;
                 //异地登录
                 public string reason;
                 //临时会话
                 //public string id;
                 //public string ruin;
                 //public string service_type;
-                //讨论组
-                public string did;
             }
         }
     }

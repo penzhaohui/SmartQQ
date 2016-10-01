@@ -9,6 +9,7 @@ namespace MyQQ.Util
     public class MyQQRobot
     {
         public static SmartQQ.MessageService messageService = null;
+        public static readonly MyQQDAL MyQQDAL = new MyQQDAL();
 
         public static void LaunchMyQQRobot(SmartQQWrapper smartQQ)
         {
@@ -24,7 +25,9 @@ namespace MyQQ.Util
         }
 
         public static void ProcessMessageHandler(QQMessage message)
-        { 
+        {
+            System.Console.WriteLine("Receive one message");
+            MyQQDAL.AddOneMessage(message.QQAccount, message);
         }
     }
 }

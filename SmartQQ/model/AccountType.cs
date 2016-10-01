@@ -9,7 +9,7 @@ namespace SmartQQ.model
     public enum AccountType
     {
         Kick = 0,
-        Normal = 1,
+        Private = 1,
         Group = 2,
         Discussion = 3   
     }
