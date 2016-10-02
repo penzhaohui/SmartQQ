@@ -13,10 +13,12 @@ namespace SmartQQ
 {
     public class MessageService
     {
+        private static Random rand = new Random();
+
         public delegate void ProcessMessageHandler(QQMessage message);
         public delegate void SendMessageHandler(bool success);
         public delegate void HeartbeatMonitor(string qqAccount, bool running);
-
+        
         private SmartQQWrapper smartQQ = null;
         private ProcessMessageHandler ProcessMessageAction;
         private SendMessageHandler SendMessageAction;
@@ -162,6 +164,8 @@ namespace SmartQQ
             message.MessageType = MessageType.Receive;
             message.MessageContent = GetMessageText(value.content);
 
+            this.SendMessage(0, message.FriendID, "收到！QQ机器人正在处理，请稍等...");
+
             return message;
         }
 
@@ -178,6 +182,8 @@ namespace SmartQQ
             message.MessageType = MessageType.Receive;
             message.MessageContent = GetMessageText(value.content);
 
+            this.SendMessage(1, message.GroupID, "收到！QQ机器人正在处理，请稍等...");
+
             return message;
         }
 
@@ -193,6 +199,8 @@ namespace SmartQQ
             message.FriendID = value.send_uin;
             message.MessageType = MessageType.Receive;
             message.MessageContent = GetMessageText(value.content);
+
+            this.SendMessage(2, message.DiscussionID, "收到！QQ机器人正在处理，请稍等...");
 
             return message;
         }
@@ -286,7 +294,7 @@ namespace SmartQQ
         /// <param name="id">用户：uid；群：qid；讨论组：did</param>
         /// <param name="messageToSend">要发送的消息</param>
         /// <returns></returns>
-        private bool SendMessage(int type, string id, string messageToSend)
+        public bool SendMessage(int type, string id, string messageToSend)
         {
             if (messageToSend.Equals("") || id.Equals(""))
             {
@@ -332,7 +340,7 @@ namespace SmartQQ
                 }
 
                 string postData = "{\"#{type}\":#{id},\"content\":\"[#{msg},[\\\"font\\\",{\\\"name\\\":\\\"宋体\\\",\\\"size\\\":10,\\\"style\\\":[0,0,0],\\\"color\\\":\\\"000000\\\"}]]\",\"face\":#{face},\"clientid\":53999199,\"msg_id\":#{msg_id},\"psessionid\":\"#{psessionid}\"}";
-                //postData = "r=" + HttpUtility.UrlEncode(postData.Replace("#{type}", to_groupuin_did).Replace("#{id}", id).Replace("#{msg}", messageToSend).Replace("#{face}", SelfInfo.face.ToString()).Replace("#{msg_id}", rand.Next(10000000, 99999999).ToString()).Replace("#{psessionid}", psessionid));
+                postData = "r=" + HttpUtility.UrlEncode(postData.Replace("#{type}", to_groupuin_did).Replace("#{id}", id).Replace("#{msg}", messageToSend).Replace("#{face}", this.smartQQ.Face.ToString()).Replace("#{msg_id}", rand.Next(10000000, 99999999).ToString()).Replace("#{psessionid}", this.smartQQ.PSessionId));
 
                 string dat = HTTP.Post(url, postData, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
 

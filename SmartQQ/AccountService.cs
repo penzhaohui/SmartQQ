@@ -44,6 +44,7 @@ namespace SmartQQ
                 smartQQ.Email = info.result.email;
                 smartQQ.Province = info.result.province;
                 smartQQ.Gender = info.result.gender;
+                smartQQ.Face = info.result.face;
             }
 
             return smartQQ;

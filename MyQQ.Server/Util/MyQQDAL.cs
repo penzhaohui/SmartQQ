@@ -336,9 +336,9 @@ namespace MyQQ.Util
             if (sqlHelper.ExecuteNonQuery(sqlInsertQQAccount, CommandType.Text, paraArray) > 0)
             {
                 string sqlInsertQQAccountProfile = @"INSERT INTO QQAccountProfile (QQAccount, Birthday, Blood, City, College, Country, Email, Gender, Homepage,
-                                                                                   Lnick, Mobile, Nick, Occupation, Personal, Phone, Province, Shengxiao)
+                                                                                   Lnick, Mobile, Nick, Occupation, Personal, Phone, Province, Shengxiao, Face)
                                                      VALUES (@QQAccount, @Birthday, @Blood, @City, @College, @Country, @Email, @Gender, @Homepage,
-                                                                                   @Lnick, @Mobile, @Nick, @Occupation, @Personal, @Phone, @Province, @Shengxiao)";
+                                                                                   @Lnick, @Mobile, @Nick, @Occupation, @Personal, @Phone, @Province, @Shengxiao, @Face)";
 
                 DateTime birthday = smartQQWarapper.Birthday;
                 int blood = smartQQWarapper.Blood;
@@ -356,8 +356,9 @@ namespace MyQQ.Util
                 string phone = smartQQWarapper.Phone;
                 string province = smartQQWarapper.Province;
                 int shengxiao = smartQQWarapper.Shengxiao;
+                int face = smartQQWarapper.Face;
 
-                SQLiteParameter[] paraArray1 = new SQLiteParameter[17];
+                SQLiteParameter[] paraArray1 = new SQLiteParameter[18];
 
                 paraArray1[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, account);
                 paraArray1[1] = sqlHelper.InitSQLiteParameter("@Birthday", ParameterDirection.Input, birthday);
@@ -376,6 +377,7 @@ namespace MyQQ.Util
                 paraArray1[14] = sqlHelper.InitSQLiteParameter("@Phone", ParameterDirection.Input, phone);
                 paraArray1[15] = sqlHelper.InitSQLiteParameter("@Province", ParameterDirection.Input, province);
                 paraArray1[16] = sqlHelper.InitSQLiteParameter("@Shengxiao", ParameterDirection.Input, shengxiao);
+                paraArray1[17] = sqlHelper.InitSQLiteParameter("@Face", ParameterDirection.Input, face);
 
 
                 if (sqlHelper.ExecuteNonQuery(sqlInsertQQAccountProfile, CommandType.Text, paraArray1) > 0)
@@ -440,7 +442,7 @@ namespace MyQQ.Util
                                                      SET Birthday = @Birthday, Blood = @Blood, City = @City, College = @College, 
                                                          Country = @Country, Email = @Email, Gender = @Gender, Homepage = @Homepage,
                                                          Lnick = @Lnick, Mobile = @Mobile, Nick = @Nick, Occupation = @Occupation, 
-                                                         Personal = @Personal, Phone = @Phone, Province = @Province, Shengxiao = @Shengxiao
+                                                         Personal = @Personal, Phone = @Phone, Province = @Province, Shengxiao = @Shengxiao, Face = @Face
                                                      WHERE QQAccount = @QQAccount";
 
                 DateTime birthday = smartQQWarapper.Birthday;
@@ -459,6 +461,7 @@ namespace MyQQ.Util
                 string phone = smartQQWarapper.Phone;
                 string province = smartQQWarapper.Province;
                 int shengxiao = smartQQWarapper.Shengxiao;
+                int face = smartQQWarapper.Face;
 
                 SQLiteParameter[] paraArray1 = new SQLiteParameter[17];
 
@@ -479,7 +482,9 @@ namespace MyQQ.Util
                 paraArray1[13] = sqlHelper.InitSQLiteParameter("@Phone", ParameterDirection.Input, phone);
                 paraArray1[14] = sqlHelper.InitSQLiteParameter("@Province", ParameterDirection.Input, province);
                 paraArray1[15] = sqlHelper.InitSQLiteParameter("@Shengxiao", ParameterDirection.Input, shengxiao);
-                paraArray1[16] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, account);
+                paraArray1[16] = sqlHelper.InitSQLiteParameter("@Face", ParameterDirection.Input, face);
+                paraArray1[17] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, account);
+               
 
                 if (sqlHelper.ExecuteNonQuery(sqlInsertQQAccountProfile, CommandType.Text, paraArray1) > 0)
                 {

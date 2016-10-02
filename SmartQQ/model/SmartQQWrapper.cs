@@ -37,7 +37,8 @@ namespace SmartQQ.model
         public string Personal { get; set; }
         public string Phone { get; set; }
         public string Province { get; set; }
-        public int Shengxiao { get; set; }      
+        public int Shengxiao { get; set; }
+        public int Face { get; set; }
 
         public List<QQFriendAccount> FriendAccounts { get; set; }
         public List<GroupAccount> GroupAccounts { get; set; }
