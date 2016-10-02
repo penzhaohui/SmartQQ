@@ -45,6 +45,7 @@
     <Compile Include="GroupEntity.cs" />
     <Compile Include="GroupMemberEntity.cs" />
     <Compile Include="LoginEntity.cs" />
+    <Compile Include="MessageEntity.cs" />
     <Compile Include="MyQQEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResponseWrapper.cs" />

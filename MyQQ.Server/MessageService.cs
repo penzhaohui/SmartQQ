@@ -1,16 +1,66 @@
-﻿using System;
+﻿using MyQQ.Entity;
+using MyQQ.Server.Util;
+using MyQQ.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
+using System.ServiceModel.Activation;
+using System.ServiceModel.Web;
 using System.Web;
 
 namespace MyQQ
 {
+    [ServiceContract]
+    [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
     public class MessageService
     {
-        public void ReceiveMessage(string clientId)
-        { 
+        readonly MyQQDAL myQQDAL = null;
+
+        MessageService()
+        {
+            myQQDAL = new MyQQDAL();
         }
 
+        [OperationContract]
+        [WebGet(UriTemplate = "/receive/{clientId}/{endTime}", ResponseFormat = WebMessageFormat.Json)]
+        public ResponseWrapper<List<MessageEntity>> ReceiveMessage(string clientId, DateTime endTime)
+        {
+            ResponseWrapper<List<MessageEntity>> response = new ResponseWrapper<List<MessageEntity>>();
+
+            if (CacheUtil.Exists(clientId) == false)
+            {
+                response.ReturnCode = 0;
+                response.Message = "Login Failed";
+                response.InnerMessage = "The client id is expired or does not exists.";
+                response.Result = null;
+
+                return response;
+            }
+
+            if (endTime == null)
+            {
+                endTime = DateTime.Now;
+            }
+
+            DateTime startTime = endTime.AddHours(-1);            
+
+            var MyQQEntity = (MyQQEntity)CacheUtil.Get(clientId);
+            string qqAccount = MyQQEntity.QQAccount;
+
+            List<MessageEntity> messages = myQQDAL.GetMessageList(qqAccount, startTime, endTime);
+
+            response.ReturnCode = 1;
+            response.Message = "";
+            response.InnerMessage = "";
+            response.Result = messages;
+
+            return response;
+        }
+
+        [OperationContract]
+        [WebGet(UriTemplate = "/send/{clientId}", ResponseFormat = WebMessageFormat.Json)]
         public void SendMessage(string clientId)
         {
         }

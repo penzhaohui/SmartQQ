@@ -740,6 +740,32 @@ namespace MyQQ.Util
             return false;
         }
 
+        /// <summary>
+        /// Get QQ Group Name
+        /// </summary>
+        /// <param name="qqaccount"></param>
+        /// <param name="groupId"></param>
+        /// <returns></returns>
+        private string GetGroupName(string qqaccount, string groupId)
+        {
+            string groupName = string.Empty;
+            string sqlGetGroupName = "SELECT Name FROM QQGroupAccount WhERE QQAccount = @QQAccount AND Gid = @Gid ";
+
+            SQLiteParameter[] paraArray = new SQLiteParameter[2];
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqaccount);
+            paraArray[1] = sqlHelper.InitSQLiteParameter("@Gid", ParameterDirection.Input, groupId);
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(sqlGetGroupName, CommandType.Text, paraArray))
+            {
+                if (sqlDr.Read())
+                {
+                    groupName = sqlDr.GetString(0);
+                }
+            }
+
+            return groupName;
+        }
+
         #endregion
 
         #region QQ Discussion
@@ -826,6 +852,32 @@ namespace MyQQ.Util
         private bool updateQQDiscussionMember(string qqNum)
         {
             return false;
+        }
+
+        /// <summary>
+        /// Get Discussion Name
+        /// </summary>
+        /// <param name="qqaccount"></param>
+        /// <param name="discussionId"></param>
+        /// <returns></returns>
+        private string GetDiscussionName(string qqaccount, string discussionId)
+        {
+            string discussionName = string.Empty;
+            string sqlGetDiscussionName = "SELECT Name FROM QQDiscussionAccount WhERE QQAccount = @QQAccount AND Did = @Did ";
+
+            SQLiteParameter[] paraArray = new SQLiteParameter[2];
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqaccount);
+            paraArray[1] = sqlHelper.InitSQLiteParameter("@Did", ParameterDirection.Input, discussionId);
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(sqlGetDiscussionName, CommandType.Text, paraArray))
+            {
+                if (sqlDr.Read())
+                {
+                    discussionName = sqlDr.GetString(0);
+                }
+            }
+
+            return discussionName;
         }
 
         #endregion
@@ -979,6 +1031,8 @@ namespace MyQQ.Util
 
         #endregion
 
+        #region QQ Message
+
         public bool AddOneMessage(string qqAccount, QQMessage message)
         {
             // 1. Do some initialization
@@ -1052,5 +1106,80 @@ namespace MyQQ.Util
 
             return false;
         }
+
+        public List<MessageEntity> GetMessageList(string qqAccount, DateTime startTime, DateTime endTime)
+        {
+            List<MessageEntity> messages = new List<MessageEntity>();
+
+            string sqlGetMessages = @"SELECT CreateTime, QQGroupID, QQDicussionID, MessageContent, MessageOwnerAccount, MessageOwnerName 
+                                      FROM QQMessage 
+                                      WHERE QQAccount = @QQAccount
+                                      AND CreateTime > @StartTime 
+                                      AND CreateTime <= @EndTime ";
+
+            SQLiteParameter[] paraArray = new SQLiteParameter[3];
+
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+            paraArray[1] = sqlHelper.InitSQLiteParameter("@StartTime", ParameterDirection.Input, startTime);
+            paraArray[2] = sqlHelper.InitSQLiteParameter("@EndTime", ParameterDirection.Input, endTime);
+
+            Dictionary<string, string> GroupMap = new Dictionary<string, string>();
+            Dictionary<string, string> DiscussionMap = new Dictionary<string, string>();
+
+            string groupId = string.Empty;
+            string discussionId = string.Empty;
+            string groupName = string.Empty;
+            string discussionName = string.Empty;
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(sqlGetMessages, CommandType.Text, paraArray))
+            {
+                while (sqlDr.Read())
+                {
+                    MessageEntity entity = new MessageEntity();
+                    entity.CreateTime = sqlDr.IsDBNull(0) == true ? DateTime.Now : sqlDr.GetDateTime(0);
+                    entity.MessageContent = sqlDr.IsDBNull(3) == true ? String.Empty: sqlDr.GetString(3);
+                    entity.MessagerAccount = sqlDr.IsDBNull(4) == true ? String.Empty : sqlDr.GetString(4);
+                    entity.MessagerName = sqlDr.IsDBNull(5) == true ? String.Empty : sqlDr.GetString(5);
+                                        
+                    groupId = sqlDr.IsDBNull(1) == true ? String.Empty : sqlDr.GetString(1);
+                    if (!String.IsNullOrEmpty(groupId))
+                    {
+                        if (!GroupMap.ContainsKey(groupId))
+                        { 
+                            //
+                            groupName = GetGroupName(qqAccount, groupId);
+                            GroupMap.Add(groupId, groupName);
+                        }
+
+                        if (GroupMap.ContainsKey(groupId))
+                        {
+                            entity.GroupName = GroupMap[groupId];
+                        }
+                    }
+
+                    discussionId = sqlDr.IsDBNull(2) == true ? String.Empty : sqlDr.GetString(2);
+                    if (!String.IsNullOrEmpty(discussionId))
+                    {
+                        if (!DiscussionMap.ContainsKey(discussionId))
+                        {
+                            //
+                            discussionName = GetDiscussionName(qqAccount, discussionId);
+                            DiscussionMap.Add(discussionId, discussionName);
+                        }
+
+                        if (DiscussionMap.ContainsKey(discussionId))
+                        {
+                            entity.DiscussionName = DiscussionMap[discussionId];
+                        }
+                    }
+                    
+                    messages.Add(entity);
+                }
+            }
+
+            return messages;
+        }
+
+        #endregion
     }
 }
