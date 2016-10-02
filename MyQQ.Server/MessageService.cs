@@ -24,8 +24,8 @@ namespace MyQQ
         }
 
         [OperationContract]
-        [WebGet(UriTemplate = "/receive/{clientId}/{endTime}", ResponseFormat = WebMessageFormat.Json)]
-        public ResponseWrapper<List<MessageEntity>> ReceiveMessage(string clientId, DateTime endTime)
+        [WebGet(UriTemplate = "/receive/{clientId}/{ticks}", ResponseFormat = WebMessageFormat.Json)]
+        public ResponseWrapper<List<MessageEntity>> ReceiveMessage(string clientId, string ticks)
         {
             ResponseWrapper<List<MessageEntity>> response = new ResponseWrapper<List<MessageEntity>>();
 
@@ -39,12 +39,8 @@ namespace MyQQ
                 return response;
             }
 
-            if (endTime == null)
-            {
-                endTime = DateTime.Now;
-            }
-
-            DateTime startTime = endTime.AddHours(-1);            
+            DateTime endTime = new DateTime(long.Parse(ticks));
+            DateTime startTime = endTime.AddHours(-12);            
 
             var MyQQEntity = (MyQQEntity)CacheUtil.Get(clientId);
             string qqAccount = MyQQEntity.QQAccount;

@@ -28,9 +28,60 @@ namespace MyQQ
             this.QQAccount = qqAccount;
 
             this.Text = this.QQAccount + ", welcome to SmartQQ!";
-            LoadMyFriends(clientId);
+            //LoadMyFriends(clientId);
             LoadMyGroups(clientId);
             LoadMyDiscussionGroups(clientId);
+            LoadQQMessage(clientId);
+        }
+
+        private async void LoadQQMessage(string clientId)
+        {
+            String strSvcURI = BASE_IMAGE_SERVICE + "message/receive/" + clientId;
+            strSvcURI += "/" + DateTime.Now.Ticks;
+
+            HttpClient client = new HttpClient();
+
+            HttpResponseMessage responseMsg = client.Get(strSvcURI);
+            responseMsg.EnsureStatusIsSuccessful();
+
+            String strJson = responseMsg.Content.ReadAsString();
+
+            ResponseWrapper<List<MessageEntity>> getFriendsResult = JsonConvert.DeserializeObject<ResponseWrapper<List<MessageEntity>>>(strJson);
+            if (getFriendsResult.ReturnCode == 1)
+            {
+                this.txtShowMessageWindow.Text = "";
+                string message = "";
+                foreach (var entity in getFriendsResult.Result)
+                {
+                    if (!String.IsNullOrEmpty(entity.GroupName))
+                    {
+                        message = entity.CreateTime.ToString() + System.Environment.NewLine;
+                        message += "----------------------------------" + System.Environment.NewLine;
+                        message += entity.GroupName + " - " + entity.MessagerName + "[" + entity.MessagerAccount + "]: " + entity.MessageContent;
+                        message += System.Environment.NewLine;
+                    }
+                    else if (!String.IsNullOrEmpty(entity.DiscussionName))
+                    {
+                        message = entity.CreateTime.ToString() + System.Environment.NewLine;
+                        message += "----------------------------------" + System.Environment.NewLine;
+                        message += entity.DiscussionName + " - " + entity.MessagerName + "[" + entity.MessagerAccount + "]: " + entity.MessageContent;
+                        message += System.Environment.NewLine;
+                    }
+                    else
+                    {
+                        message = entity.CreateTime.ToString() + System.Environment.NewLine;
+                        message += "----------------------------------" + System.Environment.NewLine;
+                        message += entity.MessagerName + "[" + entity.MessagerAccount + "]: " + entity.MessageContent;
+                        message += System.Environment.NewLine;
+                    }
+
+                    this.txtShowMessageWindow.Text += message;
+                }
+            }
+            else
+            {
+                MessageBox.Show(getFriendsResult.Message);
+            }
         }
 
         private async void LoadMyFriends(string clientId)
@@ -124,6 +175,11 @@ namespace MyQQ
             {
                 MessageBox.Show(getDicussionGroupsResult.Message);
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            LoadQQMessage(ClientId);
         }
     }
 }

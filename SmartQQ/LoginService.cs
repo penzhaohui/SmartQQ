@@ -73,33 +73,67 @@ namespace SmartQQ
         /// <returns></returns>
         public SmartQQWrapper ProcessLoginRequest(string redirectUrl)
         {
+            string url = "";
+            string dat = "";
+
             // 1.
             string ptwebqq = "";
-            string dat = HTTP.Get(redirectUrl, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
-            Uri uri = new Uri("http://web2.qq.com/");
-            ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    dat = HTTP.Get(redirectUrl, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
+                    Uri uri = new Uri("http://web2.qq.com/");
+                    ptwebqq = HTTP.cookies.GetCookies(uri)["ptwebqq"].Value;
+                    break;
+                }
+                catch (Exception ex)
+                { 
+                }
+            }
 
             // 2.
             string vfwebqq = "";
-            string url = String.Format("http://s.web2.qq.com/api/getvfwebqq?ptwebqq={0}&clientid=53999199&psessionid=&t={1}", ptwebqq, HTTP.AID_TimeStamp());
-            dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
-            vfwebqq = dat.Substring(dat.IndexOf("\"vfwebqq\":") + "\"vfwebqq\":".Length + 1);
-            vfwebqq = vfwebqq.Substring(0, vfwebqq.IndexOf("\""));
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    url = String.Format("http://s.web2.qq.com/api/getvfwebqq?ptwebqq={0}&clientid=53999199&psessionid=&t={1}", ptwebqq, HTTP.AID_TimeStamp());
+                    dat = HTTP.Get(url, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
+                    vfwebqq = dat.Substring(dat.IndexOf("\"vfwebqq\":") + "\"vfwebqq\":".Length + 1);
+                    vfwebqq = vfwebqq.Substring(0, vfwebqq.IndexOf("\""));
+                    break;
+                }
+                catch (Exception ex)
+                { 
+                }
+            }
 
             // 3.
             string psessionid = "";
             string qqNbr = "";
-            string hash = "";
-            url = "http://d1.web2.qq.com/channel/login2";
-            string url1 = "{\"ptwebqq\":\"#{ptwebqq}\",\"clientid\":53999199,\"psessionid\":\"\",\"status\":\"online\"}".Replace("#{ptwebqq}", ptwebqq);
-            url1 = "r=" + HttpUtility.UrlEncode(url1);
-            dat = HTTP.Post(url, url1, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
-            psessionid = dat.Substring(dat.IndexOf("\"psessionid\":") + "\"psessionid\":".Length + 1);
-            psessionid = psessionid.Substring(0, psessionid.IndexOf("\""));
-            
-            qqNbr = dat.Substring(dat.IndexOf("\"uin\":") + "\"uin\":".Length);
-            qqNbr = qqNbr.Substring(0, qqNbr.IndexOf(","));
 
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    url = "http://d1.web2.qq.com/channel/login2";
+                    string url1 = "{\"ptwebqq\":\"#{ptwebqq}\",\"clientid\":53999199,\"psessionid\":\"\",\"status\":\"online\"}".Replace("#{ptwebqq}", ptwebqq);
+                    url1 = "r=" + HttpUtility.UrlEncode(url1);
+                    dat = HTTP.Post(url, url1, "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2");
+                    psessionid = dat.Substring(dat.IndexOf("\"psessionid\":") + "\"psessionid\":".Length + 1);
+                    psessionid = psessionid.Substring(0, psessionid.IndexOf("\""));
+
+                    qqNbr = dat.Substring(dat.IndexOf("\"uin\":") + "\"uin\":".Length);
+                    qqNbr = qqNbr.Substring(0, qqNbr.IndexOf(","));
+                    break;
+                }
+                catch (Exception ex)
+                { 
+                }
+            }
+
+            string hash = "";
             hash = HTTP.AID_Hash(qqNbr, ptwebqq);
 
             SmartQQWrapper smartQQ = new SmartQQWrapper();

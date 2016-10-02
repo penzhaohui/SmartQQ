@@ -91,10 +91,11 @@ namespace MyQQ.Client
 
         private async void Login_Click(object sender, EventArgs e)
         {
-            if (!String.IsNullOrEmpty(ClientID))
+            string qqAccount = GetQQAccount();
+            if (!String.IsNullOrEmpty(qqAccount))
             {
                 this.Hide();
-                string qqAccount = GetQQAccount();
+                
                 MainForm mainForm = new MainForm(ClientID, qqAccount);               
                 mainForm.Show();
             }

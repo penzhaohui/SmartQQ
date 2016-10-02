@@ -39,6 +39,7 @@
             this.grpInputMessageBox = new System.Windows.Forms.GroupBox();
             this.btnSendMessae = new System.Windows.Forms.Button();
             this.txtInputMessageBox = new System.Windows.Forms.TextBox();
+            this.btnGetMessage = new System.Windows.Forms.Button();
             this.grpFriends.SuspendLayout();
             this.grpQQGroups.SuspendLayout();
             this.grpDiscussionGroups.SuspendLayout();
@@ -150,11 +151,22 @@
             this.txtInputMessageBox.Size = new System.Drawing.Size(307, 63);
             this.txtInputMessageBox.TabIndex = 0;
             // 
+            // btnGetMessage
+            // 
+            this.btnGetMessage.Location = new System.Drawing.Point(364, 461);
+            this.btnGetMessage.Name = "btnGetMessage";
+            this.btnGetMessage.Size = new System.Drawing.Size(75, 62);
+            this.btnGetMessage.TabIndex = 5;
+            this.btnGetMessage.Text = "Get";
+            this.btnGetMessage.UseVisualStyleBackColor = true;
+            this.btnGetMessage.Click += new System.EventHandler(this.button1_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(777, 548);
+            this.Controls.Add(this.btnGetMessage);
             this.Controls.Add(this.grpInputMessageBox);
             this.Controls.Add(this.grpShowMessageWindow);
             this.Controls.Add(this.grpDiscussionGroups);
@@ -188,5 +200,6 @@
         private System.Windows.Forms.ListView lstMyFriends;
         private System.Windows.Forms.ListView lstMyQQGroups;
         private System.Windows.Forms.ListView lstMyDiscussionGroups;
+        private System.Windows.Forms.Button btnGetMessage;
     }
 }

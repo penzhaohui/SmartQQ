@@ -21,6 +21,7 @@ namespace MyQQ
         {
             RouteTable.Routes.Add(new ServiceRoute("login", new WebServiceHostFactory(), typeof(LoginService)));
             RouteTable.Routes.Add(new ServiceRoute("account", new WebServiceHostFactory(), typeof(AccountService)));
+            RouteTable.Routes.Add(new ServiceRoute("message", new WebServiceHostFactory(), typeof(MessageService)));
         }
 
         #region No Implementation
