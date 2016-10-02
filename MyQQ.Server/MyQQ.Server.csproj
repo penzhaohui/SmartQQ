@@ -39,6 +39,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>External DLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.SQLite, Version=1.0.66.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>External DLLs\System.Data.SQLite.dll</HintPath>
@@ -83,6 +87,7 @@
     <Compile Include="Util\MyQQDAL.cs" />
     <Compile Include="Util\SQLiteHelper.cs" />
     <Compile Include="Util\TokenUtil.cs" />
+    <Compile Include="Util\TulingRobot.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\MyQQ.db" />

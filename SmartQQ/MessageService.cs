@@ -164,7 +164,7 @@ namespace SmartQQ
             message.MessageType = MessageType.Receive;
             message.MessageContent = GetMessageText(value.content);
 
-            this.SendMessage(0, message.FriendID, "收到！QQ机器人正在处理，请稍等...");
+            //this.SendMessage(0, message.FriendID, "收到！QQ机器人正在处理，请稍等...");
 
             return message;
         }
@@ -182,7 +182,7 @@ namespace SmartQQ
             message.MessageType = MessageType.Receive;
             message.MessageContent = GetMessageText(value.content);
 
-            this.SendMessage(1, message.GroupID, "收到！QQ机器人正在处理，请稍等...");
+            //this.SendMessage(1, message.GroupID, "收到！QQ机器人正在处理，请稍等...");
 
             return message;
         }
@@ -200,7 +200,7 @@ namespace SmartQQ
             message.MessageType = MessageType.Receive;
             message.MessageContent = GetMessageText(value.content);
 
-            this.SendMessage(2, message.DiscussionID, "收到！QQ机器人正在处理，请稍等...");
+            //this.SendMessage(2, message.DiscussionID, "收到！QQ机器人正在处理，请稍等...");
 
             return message;
         }
