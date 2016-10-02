@@ -177,15 +177,24 @@ namespace SmartQQ
                 }
             }
 
+            account.Account = GetQQAccountByUin(account.Uin);
+        }
+
+        public string GetQQAccountByUin(string uin)
+        {
+            string friendAAAccount = "";
+
             string getFriendAccountUrl = "http://s.web2.qq.com/api/get_friend_uin2?tuin=#{uin}&type=1&vfwebqq=#{vfwebqq}&t=#{t}";
-            getFriendAccountUrl = getFriendAccountUrl.Replace("#{uin}", account.Uin).Replace("#{vfwebqq}", smartQQ.VFWebQQ);
+            getFriendAccountUrl = getFriendAccountUrl.Replace("#{uin}", uin).Replace("#{vfwebqq}", smartQQ.VFWebQQ);
             string retFriendAccoun = HTTP.Get(getFriendAccountUrl, "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1");
             FirendAccount firendAccount = (FirendAccount)JsonConvert.DeserializeObject(retFriendAccoun, typeof(FirendAccount));
 
             if (firendAccount.result != null)
             {
-                account.Account = firendAccount.result.account;
+                friendAAAccount = firendAccount.result.account;
             }
+
+            return friendAAAccount;
         }
 
         /// <summary>
@@ -281,7 +290,12 @@ namespace SmartQQ
                 {
                     groupAccount.Members.Add(GroupMemberList[member.muin]);
                 }
-            }           
+            }
+
+            foreach (var member in groupAccount.Members)
+            {
+                member.Account = GetQQAccountByUin(member.Uin);
+            }
         }
 
         /// <summary>

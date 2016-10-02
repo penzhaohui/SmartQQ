@@ -205,7 +205,7 @@ namespace MyQQ
             }
 
             smartQQWarapper.Online = true;
-            if (MyQQEntity.Name == null && MyQQEntity.Name == "")
+            if (MyQQEntity.Name == null || MyQQEntity.Name == "")
             {
                 smartQQWarapper = accountService.GetQQProfile();
                 System.Console.WriteLine("Initialize QQ profile successfully.");

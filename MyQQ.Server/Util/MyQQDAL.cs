@@ -212,7 +212,7 @@ namespace MyQQ.Util
             {
                 if (sqlDr.Read())
                 {
-                    lastUpdateTime = sqlDr.IsDBNull(0) == true ? DateTime.Now : sqlDr.GetDateTime(4);
+                    lastUpdateTime = sqlDr.IsDBNull(4) == true ? DateTime.Now : sqlDr.GetDateTime(4);
                     if (forceInit || DateTime.Now.Subtract(lastUpdateTime).TotalHours < 1)
                     {
                         myQQEntity.Name = sqlDr.IsDBNull(0) == true ? String.Empty : sqlDr.GetString(0);
@@ -490,6 +490,30 @@ namespace MyQQ.Util
             return false;
         }
 
+        /// <summary>
+        /// Update QQ's online status
+        /// </summary>
+        /// <param name="qqAccount"></param>
+        /// <param name="online"></param>
+        /// <returns></returns>
+        public bool UpdateOnlineStatus(string qqAccount, bool online)
+        {
+            string sqlInsertQQAccount = @"UPDATE QQAccount SET Online = @Online WHERE Account = @Account ";
+
+
+            SQLiteParameter[] paraArray = new SQLiteParameter[2];
+          
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@Online", ParameterDirection.Input, online);
+            paraArray[1] = sqlHelper.InitSQLiteParameter("@Account", ParameterDirection.Input, qqAccount);
+
+            if (sqlHelper.ExecuteNonQuery(sqlInsertQQAccount, CommandType.Text, paraArray) > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         #region QQ Friend Profile
 
         private bool exists(string qqNum)
@@ -574,6 +598,34 @@ namespace MyQQ.Util
             return false;
         }
 
+        /// <summary>
+        /// Get QQ Account
+        /// </summary>
+        /// <param name="qqAccount"></param>
+        /// <param name="friendUin"></param>
+        /// <returns></returns>
+        private string getQQFriendAccount(string qqAccount, string friendUin)
+        {
+            string friendAccount = "";
+
+            String strSql = "SELECT Account FROM  QQFriends WHERE QQAccount = @QQAccount AND Uin = @Uin ";
+
+            SQLiteParameter[] paraArray = new SQLiteParameter[2];
+
+            paraArray[0] = sqlHelper.InitSQLiteParameter("@QQAccount", ParameterDirection.Input, qqAccount);
+            paraArray[1] = sqlHelper.InitSQLiteParameter("@Uin", ParameterDirection.Input, friendUin);
+
+            using (SQLiteDataReader sqlDr = sqlHelper.ExecuteReader(strSql, CommandType.Text, paraArray))
+            {
+                if (sqlDr.Read())
+                {
+                    friendAccount = sqlDr.GetString(0);
+                }
+            }
+
+            return friendAccount;
+        }
+
         #endregion
 
         #region QQ Group Account
@@ -616,7 +668,7 @@ namespace MyQQ.Util
                     {
                         foreach (var member in groupAccount.Members)
                         {
-                            addQQGroupMember(gid, member);
+                            addQQGroupMember(qqaacount, gid, member);
                         }
                     }
                     else
@@ -639,10 +691,10 @@ namespace MyQQ.Util
             return false;
         }
 
-        private bool addQQGroupMember(string gid, GroupMember groupMember)
+        private bool addQQGroupMember(string qqAccount, string gid, GroupMember groupMember)
         {
-            string sqlInsertQQGroupMember = @"INSERT INTO QQGroupMember ( Uin, Gid, City, Country, Gender, Nick, Province, Card)
-                                              VALUES ( @Uin, @Gid, @City, @Country, @Gender, @Nick, @Province, @Card )";
+            string sqlInsertQQGroupMember = @"INSERT INTO QQGroupMember ( Uin, Gid, City, Country, Gender, Nick, Province, Card, Account)
+                                              VALUES ( @Uin, @Gid, @City, @Country, @Gender, @Nick, @Province, @Card, @Account )";
 
             string uin = groupMember.Uin;
             string city = groupMember.City;
@@ -650,9 +702,14 @@ namespace MyQQ.Util
             string gender = groupMember.Gender;
             string nick = groupMember.Nick;
             string province = groupMember.Province;
-            string card = groupMember.Card; 
+            string card = groupMember.Card;
+            string friendAccont = groupMember.Account;
+            if (string.IsNullOrEmpty(friendAccont))
+            {
+                friendAccont = this.getQQFriendAccount(qqAccount, uin);
+            }
 
-            SQLiteParameter[] paraArray = new SQLiteParameter[8];
+            SQLiteParameter[] paraArray = new SQLiteParameter[9];
 
             paraArray[0] = sqlHelper.InitSQLiteParameter("@Uin", ParameterDirection.Input, uin);
             paraArray[1] = sqlHelper.InitSQLiteParameter("@Gid", ParameterDirection.Input, gid);
@@ -661,7 +718,8 @@ namespace MyQQ.Util
             paraArray[4] = sqlHelper.InitSQLiteParameter("@Gender", ParameterDirection.Input, gender);
             paraArray[5] = sqlHelper.InitSQLiteParameter("@Nick", ParameterDirection.Input, nick);
             paraArray[6] = sqlHelper.InitSQLiteParameter("@Province", ParameterDirection.Input, province);
-            paraArray[7] = sqlHelper.InitSQLiteParameter("@Card", ParameterDirection.Input, card);           
+            paraArray[7] = sqlHelper.InitSQLiteParameter("@Card", ParameterDirection.Input, card);
+            paraArray[8] = sqlHelper.InitSQLiteParameter("@Account", ParameterDirection.Input, friendAccont); 
             
             try
             {

@@ -15,7 +15,7 @@ namespace MyQQ.Util
         {
             if (messageService == null)
             {
-                messageService = new SmartQQ.MessageService(smartQQ);
+                messageService = new SmartQQ.MessageService(smartQQ, ProcessHeartbeatHandler);
                 messageService.ReceiveMessage(ProcessMessageHandler);
             }
             else
@@ -28,6 +28,11 @@ namespace MyQQ.Util
         {
             System.Console.WriteLine("Receive one message");
             MyQQDAL.AddOneMessage(message.QQAccount, message);
+        }
+
+        public static void ProcessHeartbeatHandler(string qqAccount, bool running)
+        {
+            MyQQDAL.UpdateOnlineStatus(qqAccount, running);
         }
     }
 }

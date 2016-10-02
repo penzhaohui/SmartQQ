@@ -15,5 +15,6 @@ namespace SmartQQ.model
         public string Province { get; set; }
         public string City { get; set; }
         public string Gender { get; set; }
+        public string Account { get; set; }
     }
 }

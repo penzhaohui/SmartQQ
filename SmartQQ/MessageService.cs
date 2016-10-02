@@ -15,14 +15,17 @@ namespace SmartQQ
     {
         public delegate void ProcessMessageHandler(QQMessage message);
         public delegate void SendMessageHandler(bool success);
+        public delegate void HeartbeatMonitor(string qqAccount, bool running);
 
         private SmartQQWrapper smartQQ = null;
         private ProcessMessageHandler ProcessMessageAction;
         private SendMessageHandler SendMessageAction;
+        private HeartbeatMonitor HeartbeatMonitorAction;
 
-        public MessageService(SmartQQWrapper smartQQ)
+        public MessageService(SmartQQWrapper smartQQ, HeartbeatMonitor callbackFunc = null)
         {
             this.smartQQ = smartQQ;
+            this.HeartbeatMonitorAction = callbackFunc;
         }
 
         private MessageStatus status = MessageStatus.Initialized;
@@ -35,10 +38,10 @@ namespace SmartQQ
 
         public void SwitchSmartQQ(SmartQQWrapper smartQQ)
         {
-            this.smartQQ = smartQQ;
+            this.smartQQ = smartQQ;            
         }        
 
-        public void ReceiveMessage(ProcessMessageHandler callbackFunc)
+        public void ReceiveMessage(ProcessMessageHandler callbackFunc = null)
         {
             status += (int) MessageStatus.GetMessage;
 
@@ -87,6 +90,11 @@ namespace SmartQQ
                     {
                         status += (int)MessageStatus.GetMessage;
                     }
+                }
+
+                if (HeartbeatMonitorAction != null)
+                {
+                    HeartbeatMonitorAction(this.smartQQ.QQAccount, processMessageFlag);
                 }
             }
         }
