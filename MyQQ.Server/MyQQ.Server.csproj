@@ -107,6 +107,10 @@
       <Project>{2304d228-4477-4871-bd42-1f852af4754c}</Project>
       <Name>MyQQ.Entity</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TulingRobot\TulingRobot.csproj">
+      <Project>{cc74a7a2-6a64-46b8-a1bd-a94635236427}</Project>
+      <Name>TulingRobot</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

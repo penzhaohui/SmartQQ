@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace MyQQ.Util
@@ -1038,7 +1039,7 @@ namespace MyQQ.Util
 
         #region QQ Message
 
-        public bool AddOneMessage(string qqAccount, QQMessage message)
+        public async Task<bool> AddOneMessage(string qqAccount, QQMessage message)
         {
             // 1. Do some initialization
             string accountType = message.AccountType.ToString();

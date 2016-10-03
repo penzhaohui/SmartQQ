@@ -146,7 +146,8 @@ namespace SmartQQ
                 if (ProcessMessageAction != null)
                 {
                     message.QQAccount = this.smartQQ.QQAccount;
-                    ProcessMessageAction(message);
+                    Task.Run(() => ProcessMessageAction(message));
+                    //ProcessMessageAction(message);
                 }
             }
         }

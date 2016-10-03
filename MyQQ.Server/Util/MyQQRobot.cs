@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
+using TulingRobot;
 
 namespace MyQQ.Util
 {
@@ -26,6 +28,7 @@ namespace MyQQ.Util
 
         public static void ProcessMessageHandler(QQMessage message)
         {
+            /*
             string answer = TulingRobot.Answer(message.MessageContent);
             if (message.AccountType == AccountType.Private)
             {
@@ -39,8 +42,35 @@ namespace MyQQ.Util
             {
                 messageService.SendMessage(2, message.DiscussionID, answer);
             }
+            */
+
+            RobotPool robotPool = RobotPool.NewInstance();
+            IRobot robot = null;
+            string answer = "";            
+            if (message.AccountType == AccountType.Private)
+            {
+                robot = robotPool.ApplyOneAvailableRobot(RobotType.Private, message.FriendID);
+                answer = robot.Consult(message.MessageContent);
+                messageService.SendMessage(0, message.FriendID, answer);
+            }
+            else if (message.AccountType == AccountType.Group
+                || message.AccountType == AccountType.Discussion)
+            {
+                robot = robotPool.ApplyOneAvailableRobot(RobotType.Public, message.QQAccount);
+                answer = robot.Consult(message.MessageContent);
+
+                if (message.AccountType == AccountType.Group)
+                {
+                    messageService.SendMessage(1, message.GroupID, answer);
+                }
+                else
+                {
+                    messageService.SendMessage(2, message.DiscussionID, answer);
+                }
+            }
 
             System.Console.WriteLine("Receive one message");
+            //Task.Run(() => MyQQDAL.AddOneMessage(message.QQAccount, message));
             MyQQDAL.AddOneMessage(message.QQAccount, message);
         }
 

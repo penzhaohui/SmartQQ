@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyQQ.Server", "MyQQ.Server\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartQQ", "SmartQQ\SmartQQ.csproj", "{4CBA94A3-D54E-4022-8522-2E27A1B85017}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TulingRobot", "TulingRobot\TulingRobot.csproj", "{CC74A7A2-6A64-46B8-A1BD-A94635236427}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{4CBA94A3-D54E-4022-8522-2E27A1B85017}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CBA94A3-D54E-4022-8522-2E27A1B85017}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CBA94A3-D54E-4022-8522-2E27A1B85017}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC74A7A2-6A64-46B8-A1BD-A94635236427}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC74A7A2-6A64-46B8-A1BD-A94635236427}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC74A7A2-6A64-46B8-A1BD-A94635236427}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC74A7A2-6A64-46B8-A1BD-A94635236427}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
