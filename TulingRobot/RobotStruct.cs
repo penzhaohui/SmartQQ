@@ -85,23 +85,16 @@ namespace TulingRobot
         /// <returns></returns>
         public bool Register(string cientKey)
         {
-            if (RobotType.Private == this._type)
+            if (CanRegister())
             {
-                return false;
+                this._clientKeys.Add(cientKey);
             }
             else
             {
-                if (CanRegister())
-                {
-                    this._clientKeys.Add(cientKey);
-                }
-                else
-                {
-                    throw new MaxClientException(_maxClientCount);
-                }
+                throw new MaxClientException(_maxClientCount);
             }
 
-            return true;
+            return true;           
         }
 
         public void Dispose()

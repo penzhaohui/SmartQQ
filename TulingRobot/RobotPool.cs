@@ -82,56 +82,71 @@ namespace TulingRobot
         /// <param name="e"></param>
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            List<string> idledApiKey = new List<string>();
-
-            foreach (string apiKey in _robots.Keys)
+            lock (_locker)
             {
-                RobotStruct robotStruct = _robots[apiKey];
-                IRobot robot = robotStruct.Robot;
-                if (robot.IdledMinutes > _maxIdleMinutes)
-                {
-                    idledApiKey.Add(apiKey);
+                List<string> idledApiKey = new List<string>();
 
-                    foreach (string clientKey in robotStruct.RegisteredClientKeys)
+                foreach (string apiKey in _robots.Keys)
+                {
+                    RobotStruct robotStruct = _robots[apiKey];
+                    IRobot robot = robotStruct.Robot;
+                    if (robot.IdledMinutes >= _maxIdleMinutes)
                     {
-                        if (_roster.ContainsKey(clientKey))
+                        idledApiKey.Add(apiKey);
+
+                        foreach (string clientKey in robotStruct.RegisteredClientKeys)
                         {
-                            if (apiKey == _roster[clientKey])
+                            if (_roster.ContainsKey(clientKey))
                             {
-                                // 先从花名册中删除 Client Key
-                                _roster.Remove(clientKey);
+                                if (apiKey == _roster[clientKey])
+                                {
+                                    // 先从花名册中删除 Client Key
+                                    _roster.Remove(clientKey);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // 后从机器人池删除机器人
-            foreach (string apiKey in idledApiKey)
-            {
-                _robots.Remove(apiKey);
-            }
-
-            // 创建最少数量的共享类型机器人
-            lock (this)
-            {
-                int newRobotCount = (_minRobot) - (_robots.Count);
-                foreach (string key in APIKeys)
+                // 后从机器人池删除机器人
+                foreach (string apiKey in idledApiKey)
                 {
-                    if (newRobotCount <= 0)
-                    {
-                        break;
-                    }
+                    _robots.Remove(apiKey);
+                }
 
-                    if (!_robots.ContainsKey(key))
+                // 创建最少数量的共享类型机器人
+                lock (this)
+                {
+                    int newRobotCount = (_minRobot) - (_robots.Count);
+                    foreach (string apiKey in APIKeys)
                     {
-                        newRobotCount--;
+                        if (newRobotCount <= 0)
+                        {
+                            break;
+                        }
 
-                        IRobot robot = new Robot(APIBaseURL, key);
-                        RobotStruct robotStruct = new RobotStruct(robot, RobotType.Public, _maxClientPerRobot);
-                        _robots.Add(key, robotStruct);
+                        // 确保此轮回收暂不使用失效的机器人
+                        //if (idledApiKey.Contains(apiKey))
+                        //{
+                        //    continue;
+                        //}
+
+                        if (!_robots.ContainsKey(apiKey))
+                        {
+                            newRobotCount--;
+
+                            IRobot robot = new Robot(APIBaseURL, apiKey);
+                            RobotStruct robotStruct = new RobotStruct(robot, RobotType.Public, _maxClientPerRobot);
+                            _robots.Add(apiKey, robotStruct);
+                        }
                     }
                 }
+
+                // 后从机器人池删除机器人
+                //foreach (string apiKey in idledApiKey)
+                //{
+                //    _robots.Remove(apiKey);
+                //}
             }
         }
 
