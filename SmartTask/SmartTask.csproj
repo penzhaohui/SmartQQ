@@ -50,7 +50,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="framework\AbstractTask.cs" />
+    <Compile Include="framework\common\ErrorWayType.cs" />
+    <Compile Include="framework\common\TaskExecutionInfo.cs" />
+    <Compile Include="framework\common\TaskMetaInfo.cs" />
     <Compile Include="framework\TaskResult.cs" />
+    <Compile Include="framework\common\TaskResultType.cs" />
+    <Compile Include="framework\common\TaskRunStatus.cs" />
+    <Compile Include="framework\common\TaskWorkSettingInfo.cs" />
+    <Compile Include="framework\common\WorkTimeSpan.cs" />
+    <Compile Include="framework\util\CronExpression.cs" />
+    <Compile Include="framework\util\SystemTime.cs" />
+    <Compile Include="framework\util\TreeSet.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
