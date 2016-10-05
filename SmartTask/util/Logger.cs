@@ -115,7 +115,7 @@ namespace SmartTask
             Write(msg);
         }
 
-        public static void DebugFormat(string format, params object[] args)
+        public static void Debug(string format, params object[] args)
         {
             string msg = String.Format(format, args);
             Debug(msg);
@@ -127,7 +127,7 @@ namespace SmartTask
             Write(msg);
         }
 
-        public static void InfoFormat(string format, params object[] args)
+        public static void Info(string format, params object[] args)
         {
             string msg = String.Format(format, args); ;
             Info(msg);
@@ -139,7 +139,7 @@ namespace SmartTask
             Write(msg);
         }
 
-        public static void WarnFormat(string format, params object[] args)
+        public static void Warn(string format, params object[] args)
         {
             string msg = String.Format(format, args);
             Warn(msg);
@@ -151,7 +151,7 @@ namespace SmartTask
             Write(msg);
         }
 
-        public static void ErrorFormat(string format, params object[] args)
+        public static void Error(string format, params object[] args)
         {
             string msg = String.Format(format, args);
             Error(msg);
@@ -163,7 +163,7 @@ namespace SmartTask
             Write(msg);
         }
 
-        public static void FatalFormat(string format, params object[] args)
+        public static void Fatal(string format, params object[] args)
         {
             string msg = String.Format(format, args);
             Fatal(msg);

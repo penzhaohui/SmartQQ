@@ -23,8 +23,7 @@ namespace SmartTask
         private readonly string _displayName = "";
 
         public SmartTaskService()
-        {        
-
+        {
             InitializeComponent();
 
             _displayName = ConfigurationManager.AppSettings["ServiceDisplayName"].Trim(); 
@@ -44,13 +43,13 @@ namespace SmartTask
             {
                 if (_taskManager == null)
                     _taskManager = new TaskManagementService();
-                Logger.InfoFormat("try run the {0}.", _displayName);
+                Logger.Info("try run the {0}.", _displayName);
                 _taskManager.Start();
-                Logger.InfoFormat("{0} is runing.", _displayName);
+                Logger.Info("{0} is runing.", _displayName);
             }
             catch (Exception ex)
             {
-                Logger.FatalFormat("启动服务时发生异常", ex);
+                Logger.Fatal("启动服务时发生异常", ex);
                 throw;
             }
         }
@@ -60,9 +59,9 @@ namespace SmartTask
         /// </summary>
         protected override void OnStop()
         {
-            Logger.InfoFormat("try stop the {0}.", _displayName);
+            Logger.Info("try stop the {0}.", _displayName);
             _taskManager.Stop();
-            Logger.InfoFormat("{0} is stoped.", _displayName);
+            Logger.Info("{0} is stoped.", _displayName);
         }
 
         /// <summary>
@@ -70,9 +69,9 @@ namespace SmartTask
         /// </summary>
         protected override void OnPause()
         {
-            Logger.InfoFormat("try pause the {0}", _displayName);
+            Logger.Info("try pause the {0}", _displayName);
             _taskManager.Pause();
-            Logger.InfoFormat("{0} is pauseed\n", _displayName);
+            Logger.Info("{0} is pauseed\n", _displayName);
         }
 
         /// <summary>
@@ -80,9 +79,9 @@ namespace SmartTask
         /// </summary>
         protected override void OnContinue()
         {
-            Logger.InfoFormat("try continue the {0}", _displayName);
+            Logger.Info("try continue the {0}", _displayName);
             _taskManager.Resume();
-            Logger.InfoFormat("{0} is continued\n", _displayName);
+            Logger.Info("{0} is continued\n", _displayName);
         }
 
         /// <summary>
@@ -90,7 +89,7 @@ namespace SmartTask
         /// </summary>
         public static void Main(string[] args)
         {
-            Logger.DebugFormat("args:[{0}]", string.Join(" ", args));
+            Logger.Debug("args:[{0}]", string.Join(" ", args));
 
             try
             {
@@ -103,13 +102,13 @@ namespace SmartTask
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("创建互斥体[mutexName = {0}]异常，程序退出", mutexName);
+                    Logger.Error("创建互斥体[mutexName = {0}]异常，程序退出", mutexName);
                     Environment.Exit(1);
                 }
 
                 if (newMutexCreated)
                 {
-                    Logger.DebugFormat("创建互斥体[mutexName = {0}]成功，开始创建服务", mutexName);
+                    Logger.Debug("创建互斥体[mutexName = {0}]成功，开始创建服务", mutexName);
 
                     //无参数时直接运行服务
                     if ((!Environment.UserInteractive))
@@ -136,7 +135,7 @@ namespace SmartTask
                         if (args[0].Equals("-t", StringComparison.OrdinalIgnoreCase) ||
                             args[0].Equals("-c", StringComparison.OrdinalIgnoreCase))
                         {
-                            Logger.InfoFormat("Run as Console.[{0}]", Assembly.GetExecutingAssembly().Location);
+                            Logger.Info("Run as Console.[{0}]", Assembly.GetExecutingAssembly().Location);
                             RunAsConsole(args);
                             return;
                         }
@@ -149,7 +148,7 @@ namespace SmartTask
                     else
                     {
 #if DEBUG
-                        Logger.InfoFormat("Run as Console.[{0}]", Assembly.GetExecutingAssembly().Location);
+                        Logger.Info("Run as Console.[{0}]", Assembly.GetExecutingAssembly().Location);
                         RunAsConsole(args);
 #endif
                     }
@@ -162,7 +161,7 @@ namespace SmartTask
             }
             catch (Exception ex)
             {
-                Logger.ErrorFormat("启动服务异常", ex);
+                Logger.Error("启动服务异常", ex);
             }
             finally
             {

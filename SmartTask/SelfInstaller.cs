@@ -27,10 +27,10 @@ namespace SmartTask
             }
             catch(Exception ex)
             {
-                Logger.ErrorFormat("Failed to install the windows service, ", ex.Message);
+                Logger.Error("Failed to install the windows service, ", ex.Message);
                 if (ex.InnerException != null)
                 {
-                    Logger.ErrorFormat("Inner exception message {0}", ex.InnerException.Message);
+                    Logger.Error("Inner exception message {0}", ex.InnerException.Message);
                 }
 
                 return false;

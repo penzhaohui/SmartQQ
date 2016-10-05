@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace SmartTask
@@ -39,15 +41,62 @@ namespace SmartTask
         public TaskMetaInfo Meta { get; set; }
 
         /// <summary>
-        /// 本任务运行情况
-        /// </summary>
-        public TaskExecutionInfo Execution { get; set; }
-
-        /// <summary>
         /// 工作执行时间遇错等相关设定
         /// </summary>
         [XmlElement("workSetting")]
         public TaskWorkSettingInfo WorkSetting { get; set; }
+
+        /// <summary>
+        /// 本任务运行情况
+        /// </summary>
+        public ExecutionInfo Execution { get; set; }
+
+        #region 自定义的扩展配置 GetExtend
+
+        /// <summary>
+        /// 结合该任务的扩展配置类，内部使用，请使用GetExtend获取该扩展实例。
+        /// </summary>
+        [XmlElement("extend")]
+        public object Extend { get; set; }
+
+        /// <summary>
+        /// 获取已设定的扩展类型实例
+        /// </summary>
+        /// <typeparam name="T">扩展的类型</typeparam>
+        /// <returns>扩展类实例</returns>
+        public T GetExtend<T>() where T : class
+        {
+            return XmlSerializor.Deserialize<T>(ExtendRawXml);
+        }
+
+        /// <summary>
+        /// Extend扩展的Xml片断
+        /// </summary>
+        /// <returns></returns>
+        protected string ExtendRawXml
+        {
+            get
+            {
+                var nodes = Extend as XmlNode[];
+                if (nodes == null || nodes.Length == 0)
+                    return "<extend />";
+                using (var w = new StringWriter())
+                {
+                    using (XmlWriter writer = new XmlTextWriter(w))
+                    {
+                        writer.WriteStartElement("extend");
+                        foreach (var node in nodes)
+                            writer.WriteRaw(node.OuterXml);
+
+                        writer.WriteEndElement();
+                        writer.Close();
+                    }
+                    return w.ToString();
+                }
+            }
+        }
+
+        #endregion
 
         #region 方法 GetNextLaunchTime
 

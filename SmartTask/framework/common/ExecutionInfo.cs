@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace SmartTask
@@ -10,12 +11,12 @@ namespace SmartTask
     /// 任务运行状态
     /// </summary>
     [Serializable]
-    public class TaskExecutionInfo
+    public class ExecutionInfo
     {
         /// <summary>
         /// 
         /// </summary>
-        public TaskExecutionInfo()
+        public ExecutionInfo()
         {
         }
 
@@ -54,7 +55,6 @@ namespace SmartTask
         /// Note:状态是给人看的，不是判断任务是否执行的依据。
         /// </summary>
         [XmlAttribute]
-        public TaskRunStatus RunStatus { get; set; }
-
+        public TaskRunStatus RunStatus { get; set; }        
     }
 }

@@ -54,6 +54,16 @@ namespace SmartTask
         protected Func<TaskResult> WorkHandler;
 
         /// <summary>
+        /// 共公资源配置信息引用
+        /// </summary>
+        internal protected ResourceCollection Resources { get; set; }
+
+        /// <summary>
+        /// 系统自带的预定义扩展
+        /// </summary>
+        protected PreExtendInfo Extend { get; set; }
+
+        /// <summary>
         /// 当前工作是否正在移除之中
         /// </summary>
         protected bool IsRemoving
@@ -81,6 +91,7 @@ namespace SmartTask
         {
             try
             {
+                // http://www.cnblogs.com/SharkBin/archive/2012/08/04/2622627.html
                 TaskWorker.Change(Timeout.Infinite, Timeout.Infinite); //暂停计时。
                 if (IsRemoving)
                 {
@@ -91,7 +102,7 @@ namespace SmartTask
                 //执行今日任务
                 _runTimes++;
                 var now = SystemTime.Now();
-                Logger.InfoFormat("[{0}] 第{1}次执行开始。[{2}] ◇", this, _runTimes, now.ToShortTimeString());
+                Logger.Info("[{0}] 第{1}次执行开始。[{2}] ◇", this, _runTimes, now.ToShortTimeString());
                 ChangeStatus(TaskRunStatus.Working);
                 var val = new TaskResult();
                 try
@@ -100,7 +111,7 @@ namespace SmartTask
                 }
                 catch (Exception ex)
                 {
-                    Logger.ErrorFormat("执行任务<{0}>时发生异常:{1}", this.Task, ex);                    
+                    Logger.Error("执行任务<{0}>时发生异常:{1}", this.Task, ex);                    
                     val.Result = TaskResultType.Error;
                     val.ExtendMessage = ex.Message;
                 }
@@ -111,7 +122,7 @@ namespace SmartTask
                 }
                
                 var runSpan = SystemTime.Now() - now;
-                Logger.InfoFormat("[{0}] 第{1}次执行结果[{2} : {3}] [Execution:{4}]", this, _runTimes, val.Result, val.Message, runSpan);
+                Logger.Info("[{0}] 第{1}次执行结果[{2} : {3}] [Execution:{4}]", this, _runTimes, val.Result, val.Message, runSpan);
 
                 //Note:工作完成后的状态处理
                 //Note:注意，这里的错误次数实际上是执行失败的次数
@@ -119,7 +130,7 @@ namespace SmartTask
                 {
                     var sleepInterval = ((TimeSpan)Task.WorkSetting.SleepInterval);
                     Task.Execution.SleepTimes++;
-                    Logger.WarnFormat("[{0}] 状态更新[{1}],休眠次数++ ，准备[{2}]后再次执行", this, val.Result, sleepInterval);
+                    Logger.Warn("[{0}] 状态更新[{1}],休眠次数++ ，准备[{2}]后再次执行", this, val.Result, sleepInterval);
                     TaskWorker.Change(sleepInterval, TimeSpan.FromMilliseconds(-1));
                     return;
                 }
@@ -130,19 +141,19 @@ namespace SmartTask
                     if (runInterval == null)
                     {
                         ChangeStatus(TaskRunStatus.Removing);
-                        Logger.DebugFormat("[{0}] 下次运行时间为null，当前任务停止。", this);
+                        Logger.Debug("[{0}] 下次运行时间为null，当前任务停止。", this);
                         return;
                     }
                     if (runInterval.Value.TotalMilliseconds > WorkerInterval * 5)
                     {
                         ChangeStatus(TaskRunStatus.Removing);
-                        Logger.DebugFormat("[{0}] 下次运行时间{1}，超过5倍工作线程间隔，暂时移除执行队列。当前任务停止。", this, runInterval);
+                        Logger.Debug("[{0}] 下次运行时间{1}，超过5倍工作线程间隔，暂时移除执行队列。当前任务停止。", this, runInterval);
                         return;
                     }
 
                     //var runInterval = runTime.Value.Subtract(now);
                     SaveExecution();
-                    Logger.DebugFormat("[{0}]第{1}次执行结束。 运行成功[Times:{2}] ，准备[{3}]后再次执行 ◆", this, _runTimes, Task.Execution.RunTimes, runInterval);
+                    Logger.Debug("[{0}]第{1}次执行结束。 运行成功[Times:{2}] ，准备[{3}]后再次执行 ◆", this, _runTimes, Task.Execution.RunTimes, runInterval);
                     TaskWorker.Change(runInterval.Value, TimeSpan.FromMilliseconds(-1)); //Note:更改计时器约50多毫秒
                 }
 
@@ -155,7 +166,7 @@ namespace SmartTask
                     //Task.Meta.Execution.LastSucceedRun = PathDate ?? now;   //Note:可自动补全点
                     //Task.Meta.Execution.RunStatus = TaskRunStatusType.TodayComplete;
                     ChangeStatus(TaskRunStatus.Removing);
-                    Logger.DebugFormat("■ [{0}] ({1})完成。■", this, Task.Execution.LastSucceedRun);
+                    Logger.Debug("■ [{0}] ({1})完成。■", this, Task.Execution.LastSucceedRun);
                     return;
                 }
 
@@ -163,7 +174,7 @@ namespace SmartTask
                 if (val.Result.HasFlag(TaskResultType.Error) && Task.WorkSetting.ErrorWay == ErrorWayType.Stop)
                 {
                     ChangeStatus(TaskRunStatus.Removing);
-                    Logger.InfoFormat("▲ [{0}] 根据设定Stop，发生了错误一次，等待移除。▲", this);
+                    Logger.Info("▲ [{0}] 根据设定Stop，发生了错误一次，等待移除。▲", this);
                     return;
                 }
 
@@ -172,7 +183,7 @@ namespace SmartTask
                     Task.WorkSetting.SleepInterval.Times > 0 && Task.WorkSetting.ErrorWay == ErrorWayType.TryAndStop)
                 {
                     ChangeStatus(TaskRunStatus.Removing);
-                    Logger.InfoFormat("▲ [{0}] 根据设定Sleep，发生了错误{Task.Execution.SleepTimes}次，等待移除。▲", this);
+                    Logger.Info("▲ [{0}] 根据设定Sleep，发生了错误{Task.Execution.SleepTimes}次，等待移除。▲", this);
                     return;
                 }
 
@@ -182,7 +193,7 @@ namespace SmartTask
             catch (Exception ex)
             {
                 //Note:异常发生后停止该任务，不管任何原因
-                Logger.ErrorFormat("[{0}] 执行异常，停止执行。{1}", this, ex);
+                Logger.Error("[{0}] 执行异常，停止执行。{1}", this, ex);
                 Stop();
             }
             finally
@@ -207,13 +218,13 @@ namespace SmartTask
                 var launchInterval = Task.GetNextInterval();
                 if (launchInterval == null)
                 {
-                    Logger.WarnFormat("[{0}] 启动时间为null，中断启动。", this);
+                    Logger.Warn("[{0}] 启动时间为null，中断启动。", this);
                     return;
                 }
                 Task.Execution.RunTimes = 0;
                 Task.Execution.SleepTimes = 0;
                 TaskWorker = new Timer(TimerCallback, null, launchInterval.Value /*第一次延时调用*/, TimeSpan.FromMilliseconds(-1) /*Note:回调时会更改调用延时，此周期设为无限*/);
-                Logger.DebugFormat("[{0}] 启动成功，将于:{1}后运行", this, launchInterval);
+                Logger.Debug("[{0}] 启动成功，将于:{1}后运行", this, launchInterval);
             }
         }
 
@@ -226,7 +237,7 @@ namespace SmartTask
             //任务回调结束后才可以结束
             if (_isCallBacking)
             {
-                Logger.DebugFormat("[{0}]正在回调中，停止方法附加到任务完成后的委托上。", this);
+                Logger.Debug("[{0}]正在回调中，停止方法附加到任务完成后的委托上。", this);
                 _stopTask = StopTask; //使用委托来处理
             }
             else
@@ -240,11 +251,10 @@ namespace SmartTask
             lock (this)
             {
                 ChangeStatus(TaskRunStatus.Stoping);
-                TaskWorker.Change(Timeout.Infinite, Timeout.Infinite); //禁止再次回调
-                //SaveExecution(); //先保存一次状态
+                TaskWorker.Change(Timeout.Infinite, Timeout.Infinite); //禁止再次回调                
                 Task.Execution.RunStatus = TaskRunStatus.Stoped;
                 ChangeStatus(TaskRunStatus.Stoped);
-                Logger.DebugFormat("[{0}] 停止，计时器已释放。", this);
+                Logger.Debug("[{0}] 停止，计时器已释放。", this);
             }
         }
 
@@ -256,10 +266,9 @@ namespace SmartTask
             lock (this)
             {
                 ChangeStatus(TaskRunStatus.Pausing);
-                //SaveExecution(); //先保存一次状态
                 TaskWorker.Change(Timeout.Infinite, Timeout.Infinite); //禁止再次回调
                 ChangeStatus(TaskRunStatus.Paused);
-                Logger.DebugFormat("[{0}]暂停，计时器已暂停。(最后一次回调的任务可能还在执行)", this);
+                Logger.Debug("[{0}]暂停，计时器已暂停。(最后一次回调的任务可能还在执行)", this);
             }
         }
 
@@ -275,12 +284,12 @@ namespace SmartTask
                 var nextRun = Task.GetNextRunTime(now);
                 if (nextRun == null)
                 {
-                    Logger.WarnFormat("[{0}] 无法恢复，因为下次执行时间为null", this);
+                    Logger.Warn("[{0}] 无法恢复，因为下次执行时间为null", this);
                     return;
                 }
                 var dueTime = nextRun.Value.Subtract(now);
                 TaskWorker.Change(dueTime/*第一次延时调用*/, TimeSpan.MaxValue); //重启计时器
-                Logger.DebugFormat("[{0}] 暂停，计时器已恢复。(最后一次回调的任务可能还在执行)", this);
+                Logger.Debug("[{0}] 暂停，计时器已恢复。(最后一次回调的任务可能还在执行)", this);
             }
         }
 
@@ -296,7 +305,7 @@ namespace SmartTask
             }
             catch (Exception ex)
             {
-                Logger.ErrorFormat("释放资源时发生异常。", ex);
+                Logger.Error("释放资源时发生异常。", ex);
             }
         }
 
@@ -332,7 +341,6 @@ namespace SmartTask
         public void SaveExecution()
         {
             SaveMutex.WaitOne();
-            //ExecutionStatus.Save();
             SaveMutex.ReleaseMutex();
         }
 
@@ -340,6 +348,19 @@ namespace SmartTask
         {
             return String.Format("{0}:{1}", this.Task.Meta.Id, this.Task.Meta.Name);
         }
+
+        /// <summary>
+        /// 初始化自定义的
+        /// <para>自定义了新的扩展配置时一定要重写该方法，并自写扩展代码</para>
+        /// </summary>
+        public virtual void InitExtend()
+        {
+            if (Extend == null)
+                Extend = Task.GetExtend<PreExtendInfo>();
+
+            Extend.InitRefResource(Resources);
+        }
+
 
         /// <summary>
         /// 任务入口，继承类必须实现。

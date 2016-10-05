@@ -50,17 +50,37 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="framework\AbstractTask.cs" />
-    <Compile Include="framework\common\ErrorWayType.cs" />
-    <Compile Include="framework\common\TaskExecutionInfo.cs" />
+    <Compile Include="framework\demo\AssignHotCaseTask.cs" />
+    <Compile Include="framework\demo\CollectClosedCaseTask.cs" />
+    <Compile Include="framework\demo\DailyReportTask.cs" />
+    <Compile Include="framework\demo\SyncCaseTask.cs" />
+    <Compile Include="framework\enum\ErrorWayType.cs" />
+    <Compile Include="framework\collection\ParamCollection.cs" />
+    <Compile Include="framework\common\ParamInfo.cs" />
+    <Compile Include="framework\config\PreExtendInfo.cs" />
+    <Compile Include="framework\collection\RefCollection.cs" />
+    <Compile Include="framework\common\RefInfo.cs" />
+    <Compile Include="framework\collection\ResourceCollection.cs" />
+    <Compile Include="framework\common\ResourceInfo.cs" />
+    <Compile Include="framework\enum\ResourceType.cs" />
+    <Compile Include="framework\collection\TaskCollection.cs" />
+    <Compile Include="framework\common\TaskExecutionCollection.cs" />
     <Compile Include="framework\common\TaskMetaInfo.cs" />
+    <Compile Include="framework\common\ExecutionInfo.cs" />
+    <Compile Include="framework\config\ExecutionStatus.cs" />
+    <Compile Include="framework\config\TaskExtendBase.cs" />
+    <Compile Include="framework\config\TimerConfig.cs" />
+    <Compile Include="framework\util\XmlSerializor.cs" />
     <Compile Include="framework\TaskResult.cs" />
-    <Compile Include="framework\common\TaskResultType.cs" />
+    <Compile Include="framework\enum\TaskResultType.cs" />
     <Compile Include="framework\common\TaskRunStatus.cs" />
     <Compile Include="framework\common\TaskWorkSettingInfo.cs" />
     <Compile Include="framework\common\WorkTimeSpan.cs" />
+    <Compile Include="framework\config\Config.cs" />
+    <Compile Include="framework\config\ConfigBase.cs" />
     <Compile Include="framework\util\CronExpression.cs" />
     <Compile Include="framework\util\SystemTime.cs" />
-    <Compile Include="framework\util\TreeSet.cs" />
+    <Compile Include="framework\collection\TreeSet.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -75,7 +95,7 @@
       <DependentUpon>SmartTaskService.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="framework\TaskInfo.cs" />
+    <Compile Include="framework\common\TaskInfo.cs" />
     <Compile Include="framework\TaskManagementService.cs" />
     <Compile Include="util\Logger.cs" />
   </ItemGroup>
@@ -87,6 +107,7 @@
     <None Include="command\StopAndUninstall.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Tasks.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">
