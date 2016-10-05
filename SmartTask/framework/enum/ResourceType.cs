@@ -45,6 +45,5 @@ namespace SmartTask
         /// Email服务器
         /// </summary>
         EmailService,
-
     }
 }

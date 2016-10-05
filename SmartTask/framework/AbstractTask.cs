@@ -85,7 +85,7 @@ namespace SmartTask
 
         /// <summary>
         /// 工作运行
-        /// Note:两次间隔有100豪秒左右的误差
+        /// Note:两次间隔有100毫秒左右的误差
         /// </summary>
         public virtual void Working()
         {
@@ -163,8 +163,6 @@ namespace SmartTask
                 if ((Task.Execution.RunTimes >= Task.WorkSetting.Times && Task.WorkSetting.Times > 0) ||
                     (val.Result.HasFlag(TaskResultType.Finished)))
                 {
-                    //Task.Meta.Execution.LastSucceedRun = PathDate ?? now;   //Note:可自动补全点
-                    //Task.Meta.Execution.RunStatus = TaskRunStatusType.TodayComplete;
                     ChangeStatus(TaskRunStatus.Removing);
                     Logger.Debug("■ [{0}] ({1})完成。■", this, Task.Execution.LastSucceedRun);
                     return;
@@ -302,6 +300,9 @@ namespace SmartTask
         {
             try
             {
+                Stop();
+                TaskWorker.Dispose();
+                TaskWorker = null; //干掉引用
             }
             catch (Exception ex)
             {
