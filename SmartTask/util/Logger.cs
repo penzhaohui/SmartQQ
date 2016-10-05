@@ -27,6 +27,27 @@ namespace SmartTask
         private static int ContinueCount = 0;
         public static int AllWriteCount = 0;
 
+        /// <summary>
+        /// Log Out Window
+        /// </summary>
+        public static LogWindow LogWin { get; set; }
+
+        /// <summary>
+        /// Show Log Output Window
+        /// </summary>
+        public static void ShowLogWindow()
+        {
+            LogWindow win = new LogWindow();            
+            Thread logThread = new Thread(new ThreadStart(delegate(){
+                win.TopMost = true;
+                LogWin = win;
+                win.ShowDialog();
+                }));
+            logThread.Name = "LogThread-" + Guid.NewGuid();
+            logThread.IsBackground = true;
+            logThread.Start();
+        }
+
         static Logger()
         {
             Continue_WriteSw = new Stopwatch();
@@ -50,6 +71,11 @@ namespace SmartTask
             if (string.IsNullOrEmpty(msg)) return;
 
             System.Diagnostics.Debug.WriteLine(msg);
+
+            if (LogWin != null)
+            {
+                LogWin.Output(msg);
+            }
 
             lock (Locker)
             {

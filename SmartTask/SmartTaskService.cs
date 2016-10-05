@@ -82,7 +82,7 @@ namespace SmartTask
             Logger.Info("try continue the {0}", _displayName);
             _taskManager.Resume();
             Logger.Info("{0} is continued\n", _displayName);
-        }
+        }       
 
         /// <summary>
         /// 应用程序入口
@@ -102,7 +102,7 @@ namespace SmartTask
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error("创建互斥体[mutexName = {0}]异常，程序退出", mutexName);
+                    Logger.Error("创建互斥体[mutexName = {0}]异常，程序退出", mutexName);                   
                     Environment.Exit(1);
                 }
 
@@ -156,7 +156,17 @@ namespace SmartTask
                 else
                 {
                     Logger.Error("有一个实例正在运行，如要调试，请先停止其它正在运行的实例如WindowsService，程序退出。");
-                    Environment.Exit(1);
+
+                    System.Console.Write("Smart Task Console is running in the background. Do you want to show it?(Y/N)");
+                    char answer = Convert.ToChar(System.Console.Read());
+                    if ('Y' == answer || 'y' == answer)
+                    {
+                        ConsoleHelper.showConsole("Welcome to Smart Task Console@V1.0");
+                    }
+                    else
+                    {
+                        Environment.Exit(1);
+                    }
                 }
             }
             catch (Exception ex)
@@ -170,9 +180,93 @@ namespace SmartTask
 
         private static void RunAsConsole(string[] args)
         {
+            string ConsileTile = ConfigurationManager.AppSettings["ConsoleTitle"];
+            Console.Title = ConsileTile;
+
+            string strProcessName = System.Diagnostics.Process.GetCurrentProcess().ProcessName;
+            if (System.Diagnostics.Process.GetProcessesByName(strProcessName).Length > 1)
+            {
+                ConsoleHelper.showConsole(ConsileTile);
+                return;
+            }
+
             var service = new SmartTaskService();
             service.OnStart(null);
-            Console.ReadLine();
+
+            ShowCommandHelpText();
+
+            while (true)
+            {
+                System.Console.WriteLine("Please select one command:");
+                string command = Console.ReadLine();
+                string[] commandArgs = command.ToLower().Split(' ');
+                // Command line parsing
+                Arguments CommandLine = new Arguments(commandArgs);
+                if (CommandLine["start"] != null)
+                {
+                    service.OnStart(null);
+                }
+                else if (CommandLine["stop"] != null)
+                {
+                    service.OnStop();
+                }
+                else if (CommandLine["pause"] != null)
+                {
+                    service.OnPause();
+                }
+                else if (CommandLine["resume"] != null)
+                {
+                    service.OnContinue();
+                }
+                else if (CommandLine["clear"] != null)
+                {
+                    Console.Clear();
+                    ShowCommandHelpText();
+                } 
+                else if (CommandLine["hide"] != null)
+                {
+                    ConsoleHelper.hideConsole(ConsileTile);
+                }
+                else if (CommandLine["log"] != null)
+                {
+                    Logger.ShowLogWindow();
+                }                
+                else if (CommandLine["exit"] != null)
+                {
+                    System.Environment.Exit(-1); 
+                }                
+                else if (CommandLine["help"] != null)
+                {
+                    ShowCommandHelpText();
+                }
+                else
+                {
+                    System.Console.WriteLine("Invalid comment, please enter -help for some help");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 显示控制台命令行帮助信息
+        /// </summary>
+        private static void ShowCommandHelpText()
+        {
+            System.Console.WriteLine("*********************************************");
+            System.Console.WriteLine("*  Welcome to SmartStart Console Window     *");
+            System.Console.WriteLine("*  -help   Show help text                   *");
+            System.Console.WriteLine("*  -start  Start service                    *");
+            System.Console.WriteLine("*  -stop   Stop service                     *");
+            System.Console.WriteLine("*  -pause  Start service                    *");
+            System.Console.WriteLine("*  -resume Resume service                   *");
+            System.Console.WriteLine("*  -clear  Clean the console window         *");
+            System.Console.WriteLine("*  -hide   Hile the console window          *");
+            System.Console.WriteLine("*  -exit   Exit this application            *");
+            System.Console.WriteLine("*  -log    Show the log window              *");
+            System.Console.WriteLine("*  ------------------------------------     *");
+            System.Console.WriteLine("*  For example:                             *");
+            System.Console.WriteLine("*  Please select one command: -stop         *");
+            System.Console.WriteLine("*********************************************");
+            System.Console.WriteLine("\n\n");
         }
 
         private static void RunAsService()

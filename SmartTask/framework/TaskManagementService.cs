@@ -72,6 +72,8 @@ namespace SmartTask
 
                 TryRemoveTask();
 
+                //Console.WriteLine(DateTime.Now.ToString("HH:mm:ss ffffff") + " Working..."); // For Test
+
                 StartSettingTasks();
                
                 _watcher.Interval = ((TimeSpan)TaskSetting.WatchTimer.WorkingInterval).TotalMilliseconds;
@@ -118,7 +120,7 @@ namespace SmartTask
             var interval = (TimeSpan) TaskSetting.WatchTimer.WorkingInterval;
             if (delayMilSeconds >  interval.TotalMilliseconds *   3)
             {
-                Logger.Debug("○ [{0}] 下次启动时间间隔为:{1}，远小于监视线程间隔，暂不执行。", taskSetting, nextRunInterval);
+                Logger.Debug("○ [{0}] 下次启动时间间隔为:{1}，远大于监视线程间隔{2}，暂不执行。", taskSetting, nextRunInterval, interval);
                 return null;
             }
 
@@ -274,7 +276,7 @@ namespace SmartTask
                 if (task.Task.Execution.RunStatus != TaskRunStatus.Removing) continue;
                 task.Dispose();
                 var val = Tasks.Remove(task);
-                Logger.Debug("[{0}] 的移除结果：{val}。", task, val);
+                Logger.Debug("[{0}] 的移除结果：{1}。", task, val);
             }
         }
     }

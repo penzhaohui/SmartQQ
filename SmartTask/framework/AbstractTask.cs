@@ -286,7 +286,7 @@ namespace SmartTask
                     return;
                 }
                 var dueTime = nextRun.Value.Subtract(now);
-                TaskWorker.Change(dueTime/*第一次延时调用*/, TimeSpan.MaxValue); //重启计时器
+                TaskWorker.Change(dueTime/*第一次延时调用*/, TimeSpan.FromMilliseconds(-1) /*Note:回调时会更改调用延时，此周期设为无限*/); //重启计时器
                 Logger.Debug("[{0}] 暂停，计时器已恢复。(最后一次回调的任务可能还在执行)", this);
             }
         }
