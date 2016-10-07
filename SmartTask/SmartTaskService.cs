@@ -252,7 +252,7 @@ namespace SmartTask
         private static void ShowCommandHelpText()
         {
             System.Console.WriteLine("*********************************************");
-            System.Console.WriteLine("*  Welcome to SmartStart Console Window     *");
+            System.Console.WriteLine("*  Welcome to Smart Task Console Window     *");
             System.Console.WriteLine("*  -help   Show help text                   *");
             System.Console.WriteLine("*  -start  Start service                    *");
             System.Console.WriteLine("*  -stop   Stop service                     *");

@@ -43,7 +43,7 @@ namespace SmartTask
                 LogWin = win;
                 win.ShowDialog();
                 }));
-            logThread.Name = "LogThread-" + Guid.NewGuid();
+            logThread.Name = "OpenLogWindowThread";
             logThread.IsBackground = true;
             logThread.Start();
         }

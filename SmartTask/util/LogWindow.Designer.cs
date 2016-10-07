@@ -33,6 +33,7 @@
             // 
             // txtLogOut
             // 
+            this.txtLogOut.BackColor = System.Drawing.Color.White;
             this.txtLogOut.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtLogOut.Location = new System.Drawing.Point(0, 0);
             this.txtLogOut.Multiline = true;
@@ -51,7 +52,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "LogWindow";
-            this.Text = "Log Out Window";
+            this.Text = "Smart Task Log@Peter.Peng";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.LogWindow_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
